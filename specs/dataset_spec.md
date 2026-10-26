@@ -1,0 +1,12 @@
+Dataset Design Decisions
+- Purpose: Generate synthetic orders to test the Nykaa Support Agent without using real customer data.
+- Format: Python list of dictionaries named ORDERS. I chose dictionaries because each order contains six attributes represented as key-value pairs, while the list holds multiple orders.
+- Record count: 50 orders, exceeding the minimum requirement of 40 and providing sufficient data for testing.
+- Categories: Five categories, 10 orders each, ensuring equal representation.
+- Statuses: Placed, Shipped, Delivered, Returned, and Refunded. I chose more Delivered orders to simulate a scenario where most orders are successfully delivered.
+- Order value: ₹100–₹10,000 to represent different order values across the five retail categories, including higher-value electronics. This is a synthetic assumption, not actual Nykaa sales data.
+- Order age: 0–30 days, as specified in the assignment.
+- Delayed shipments: Boolean (True/False), with 10–30% delayed orders, as required by the assignment.
+- Record IDs: Unique identifiers such as ORD1001 to support reliable individual order lookups.
+- Random seed: 50, to make dataset generation reproducible.
+- Validation: Check record count, category and status coverage, attribute constraints, unique IDs, and delayed-shipment percentage.
