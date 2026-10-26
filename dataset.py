@@ -57,9 +57,8 @@ for i in range(50):
         # Generate an order age between 0 and 30 days.
         "days_since_created": random.randint(0, 30),
 
-        # Randomly assign True or False.
-        # I will refine this logic to meet the required delayed-shipment percentage.
-        "delayed_shipment": random.choice([True, False])
+        # limiting the number of delayed orders to 10 to ensure a 20% rate.
+        "delayed_shipment": delayed_list[i]
     }
 
     # Add the generated order dictionary to the ORDERS list.
@@ -79,3 +78,12 @@ print("Category distribution:", category_counts)
 status_counts = Counter(order["status"] for order in ORDERS)
 
 print("Status distribution:", status_counts)
+
+# Count orders with delayed shipments.
+delayed_count = sum(order["delayed_shipment"] for order in ORDERS)
+
+# Calculate the percentage of delayed shipments.
+delayed_percentage = (delayed_count / len(ORDERS)) * 100
+
+print("Delayed shipments:", delayed_count)
+print("Delayed shipment percentage:", delayed_percentage, "%")
