@@ -131,3 +131,9 @@ assert 10 <= delayed_percentage <= 30, \
     "Delayed shipment percentage must be between 10% and 30%!"
 
 print("Validation passed: Delayed shipment percentage is within range.")
+
+# Validate that every category has at least 3 orders.
+assert all(count >= 3 for count in category_counts.values()), \
+    "Every category must have at least 3 orders!"
+
+print("Validation passed: Every category has at least 3 orders.")
