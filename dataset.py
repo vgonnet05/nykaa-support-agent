@@ -87,3 +87,47 @@ delayed_percentage = (delayed_count / len(ORDERS)) * 100
 
 print("Delayed shipments:", delayed_count)
 print("Delayed shipment percentage:", delayed_percentage, "%")
+
+# Validate that every order has a unique ID.
+order_ids = [order["record_id"] for order in ORDERS]
+
+assert len(order_ids) == len(set(order_ids)), "Duplicate order IDs found!"
+
+print("Validation passed: All order IDs are unique.")
+
+# Validate that the dataset contains at least 40 orders.
+assert len(ORDERS) >= 40, "Dataset must contain at least 40 orders!"
+
+print("Validation passed: Minimum order count satisfied.")
+
+# Validate that every order value is between ₹100 and ₹10,000.
+assert all(
+    100 <= order["order_value_inr"] <= 10000
+    for order in ORDERS
+), "Order value outside the permitted range!"
+
+print("Validation passed: All order values are within range.")
+
+# Validate that every order age is between 0 and 30 days.
+assert all(
+    0 <= order["days_since_created"] <= 30
+    for order in ORDERS
+), "Order age outside the permitted range!"
+
+print("Validation passed: All order ages are within range.")
+
+# Validate that all required categories are present.
+assert set(order["category"] for order in ORDERS) == set(CATEGORIES), \
+    "Missing or unexpected categories!"
+
+# Validate that all required statuses are present.
+assert set(order["status"] for order in ORDERS) == set(STATUSES), \
+    "Missing or unexpected statuses!"
+
+print("Validation passed: All required categories and statuses are present.")
+
+# Validate that delayed shipments are between 10% and 30%.
+assert 10 <= delayed_percentage <= 30, \
+    "Delayed shipment percentage must be between 10% and 30%!"
+
+print("Validation passed: Delayed shipment percentage is within range.")
