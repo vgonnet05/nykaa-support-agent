@@ -1,0 +1,5 @@
+Nykaa Support Escalation Policy
+
+Issues that cannot be resolved using available order information or documented policies should be escalated.
+Suspected payment problems, repeated delivery failures, and unresolved complaints may require human support.
+The support agent should explain the reason for escalation and avoid promising an unconfirmed outcome.

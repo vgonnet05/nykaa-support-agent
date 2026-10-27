@@ -1,0 +1,5 @@
+Nykaa Payment Policy
+
+Customers can use the payment methods available at checkout.
+A payment may fail because of bank restrictions, insufficient funds, or a technical issue.
+Customers should verify their payment status before attempting another payment.
