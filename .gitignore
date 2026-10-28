@@ -2,6 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
+*.pyc
 
 # C extensions
 *.so
@@ -158,6 +159,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.venv-nykaa/
 
 # Spyder project settings
 .spyderproject
@@ -218,3 +220,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local vector database
+chroma_db/
+
+# VS Code settings
+.vscode/
