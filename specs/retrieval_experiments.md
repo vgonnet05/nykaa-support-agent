@@ -38,3 +38,17 @@ context. More queries are needed before recommending a strategy.
 ### Limitation
 The threshold separates all five queries in this initial test set.
 A larger evaluation set is required to assess generalization.
+
+### Precision and recall evaluations Result
+Sentence-based: Average precision 0.39; average recall 1.00.
+Fixed-size: Average precision 0.44; average recall 1.00.
+Recommendation: Fixed-size chunking performed slightly better on average precision in this small evaluation. Both achieved full recall on the three in-scope queries.
+Limitation: Only three in-scope queries were used, so more testing is needed before drawing a firm conclusion.
+
+Results
+Metric	Sentence-based	Fixed-size
+Average precision	0.39	0.44
+Average recall	1.00	1.00
+
+
+Interpretation: Fixed-size chunking has slightly higher average precision, while both strategies retrieve the expected document for all three in-scope queries.
