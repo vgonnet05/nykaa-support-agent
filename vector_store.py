@@ -36,8 +36,23 @@ print("Fixed-size embeddings:", fixed_embeddings.shape)
 client = chromadb.PersistentClient(path="./chroma_db")
 
 # Create or retrieve the sentence-based collection
-sentence_collection = client.get_or_create_collection(
-    name="sentence_chunks"
+#sentence_collection = client.get_or_create_collection(
+#    name="sentence_chunks"
+#)
+
+# Delete existing collections so they can be recreated with cosine distance
+client.delete_collection(name="sentence_chunks")
+client.delete_collection(name="fixed_size_chunks")
+
+# Create collections using cosine distance
+sentence_collection = client.create_collection(
+    name="sentence_chunks",
+    metadata={"hnsw:space": "cosine"}
+)
+
+fixed_collection = client.create_collection(
+    name="fixed_size_chunks",
+    metadata={"hnsw:space": "cosine"}
 )
 
 # Store sentence-based chunks and their embeddings
@@ -56,9 +71,9 @@ sentence_collection.upsert(
 )
 
 # Create or retrieve the fixed-size collection
-fixed_collection = client.get_or_create_collection(
-    name="fixed_size_chunks"
-)
+#fixed_collection = client.get_or_create_collection(
+#    name="fixed_size_chunks"
+#)
 
 # Store fixed-size chunks and their embeddings
 fixed_collection.upsert(
@@ -111,3 +126,79 @@ search_policy(
     "How can I get my money back?",
     fixed_collection
 )
+
+
+# Function to evaluate the similarity of search results
+def evaluate_similarity(queries, collection):
+
+    # Provisional threshold based on the current evaluation results
+    threshold = 0.20
+
+    print(f"\nEvaluating collection: {collection.name}")
+    print("-" * 60)
+
+    # Process each evaluation test case
+    for item in queries:
+
+        # Extract the query and its expected scope
+        query = item["query"]
+        expected_scope = item["expected_scope"]
+
+        # Convert the query into an embedding
+        query_embedding = model.encode(query).tolist()
+
+        # Retrieve the single closest matching chunk
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=1
+        )
+
+        # Extract cosine distance and convert it to similarity
+        distance = results["distances"][0][0]
+        similarity = 1 - distance
+
+        # Retrieve the source document
+        source = results["metadatas"][0][0]["source"]
+
+        # Decide whether the query passes the similarity threshold
+        is_in_scope = similarity >= threshold
+
+        # Print the evaluation results
+        print(f"\nQuery: {query}")
+        print(f"Expected scope: {expected_scope}")
+        print(f"Top-1 cosine distance: {distance:.4f}")
+        print(f"Top-1 cosine similarity: {similarity:.4f}")
+        print(f"Retrieved source: {source}")
+        print(f"Threshold: {threshold:.2f}")
+        print(f"Accepted as in-scope: {is_in_scope}")
+
+# Define evaluation queries for testing the search functionality
+evaluation_queries = [
+    {
+        "query": "How can I get my money back?",
+        "expected_scope": "in_scope"
+    },
+    {
+        "query": "How do I track my order shipment?",
+        "expected_scope": "in_scope"
+    },
+    {
+        "query": "Can I return a damaged product?",
+        "expected_scope": "in_scope"
+    },
+    {
+        "query": "What is the capital of France?",
+        "expected_scope": "out_of_scope"
+    },
+    {
+        "query": "How can I train my pet dog?",
+        "expected_scope": "out_of_scope"
+    }
+]
+
+
+# Evaluate the sentence-based collection
+evaluate_similarity(evaluation_queries, sentence_collection)
+
+# Evaluate the fixed-size collection
+evaluate_similarity(evaluation_queries, fixed_collection)

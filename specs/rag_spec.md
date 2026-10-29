@@ -99,7 +99,10 @@ Record per-query calculations and recommend a strategy based on the observed met
 - [x] Generate embeddings.
 - [x] Create both ChromaDB collections.
 - [x] Implement top-k retrieval.
+- [x] Evaluated top-1 cosine similarity using 3 in-scope and 2 out-of-scope queries.
+- [x] Selected a provisional similarity threshold of 0.20.
 
 ### Pending
-- [] Measure similarity and establish a threshold.
-- [] Compare precision and recall.
+- [ ] Compare document-level precision and recall.
+- [ ] Record per-query calculations and recommend a chunking strategy.
+
