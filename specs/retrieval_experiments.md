@@ -52,3 +52,23 @@ Average recall	1.00	1.00
 
 
 Interpretation: Fixed-size chunking has slightly higher average precision, while both strategies retrieve the expected document for all three in-scope queries.
+
+## Task 4: Similarity Threshold Calibration
+
+Measured top-1 cosine similarity scores using the sentence-based collection:
+
+| Query | Type | Similarity |
+|---|---|---:|
+| How can I get my money back? | In-scope | 0.3174 |
+| How do I track my order shipment? | In-scope | 0.5823 |
+| Can I return a damaged product? | In-scope | 0.5708 |
+| What is the cancellation policy? | In-scope | 0.5766 |
+| How long does delivery take? | In-scope | 0.5374 |
+| What is the capital of France? | Out-of-scope | 0.0168 |
+| How can I train my pet dog? | Out-of-scope | 0.0127 |
+
+**Chosen threshold: 0.20**
+
+The highest observed out-of-scope similarity was 0.0168, while the lowest observed in-scope similarity was 0.3174. A threshold of 0.20 separates these observed examples.
+
+This threshold is empirical and based on a small test sample. It may require recalibration with a larger evaluation dataset.
