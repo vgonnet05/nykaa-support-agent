@@ -91,12 +91,13 @@ def build_collections():
         [chunk["text"] for chunk in fixed_chunks]
     )
     # Clear existing records so renamed or deleted documents cannot remain.
-    sentence_collection.delete(
-        ids=sentence_collection.get()["ids"]
-    )
-    fixed_collection.delete(
-        ids=fixed_collection.get()["ids"]
-    )
+    sentence_ids = sentence_collection.get()["ids"]
+    if sentence_ids:
+        sentence_collection.delete(ids=sentence_ids)
+
+    fixed_ids = fixed_collection.get()["ids"]
+    if fixed_ids:
+        fixed_collection.delete(ids=fixed_ids)
     # Insert or update the sentence-based chunks in ChromaDB.
     sentence_collection.upsert(
         ids=[chunk["id"] for chunk in sentence_chunks],
