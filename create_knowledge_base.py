@@ -1,76 +1,59 @@
 from pathlib import Path
 
-# Define the folder where I store my knowledge-base documents.
+# Generates the 10 automated policy documents for the Nykaa capstone.
+# Numerical timelines below are fictional project assumptions, not
+# verified official Nykaa policies. The two manually maintained files
+# (return_policy.txt and shipping_policy.txt) are intentionally untouched.
+
 folder = Path("knowledge_base")
 
-# Define the content of my 10 remaining documents.
 documents = {
-    "cancellation_policy.txt": """Nykaa Cancellation Policy
+    "cancellation_policy.txt": """Nykaa Cancellation Policy — Project Assumptions
 
-Customers may request cancellation before an order is dispatched.
-Cancellation availability depends on the current order status.
-Orders that have already shipped may require a return request instead.""",
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumptions and are not verified official Nykaa policies.""",
 
-    "refund_policy.txt": """Nykaa Refund Policy
+    "refund_policy.txt": """Nykaa Refund Policy — Project Assumptions
 
-Refund eligibility depends on the order status and applicable product policy.
-Approved refunds are processed through the applicable payment method or refund process.
-The time required for a refund to appear may vary by payment provider.""",
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the applicable product policy. These timelines and conditions are fictional project assumptions, not verified official Nykaa policies.""",
 
-    "payment_policy.txt": """Nykaa Payment Policy
+    "payment_policy.txt": """Nykaa Payment Policy — Project Assumptions
 
-Customers can use the payment methods available at checkout.
-A payment may fail because of bank restrictions, insufficient funds, or a technical issue.
-Customers should verify their payment status before attempting another payment.""",
+Customers can use the payment methods offered at checkout, and a payment may fail because of bank restrictions, insufficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider or transaction status indicates that it is appropriate. Loyalty-point redemption requires an eligible account, available points, and a qualifying purchase. These rules are project assumptions and are not verified official Nykaa policies.""",
 
-    "order_tracking.txt": """Nykaa Order Tracking
+    "international_shipping_policy.txt": """Nykaa International Shipping Policy — Project Assumptions
 
-Customers can check order progress using their order details.
-Tracking information becomes available when the relevant shipment information is updated.
-Tracking updates may take time to appear after an order is dispatched.""",
+International shipping availability depends on the destination country and applicable product restrictions. For this project, international delivery is treated as unavailable unless the destination is explicitly listed as supported in the configured policy. Customers should confirm destination eligibility, product eligibility, and shipping charges before placing an order. This rule is a project assumption, not a verified official Nykaa policy.""",
 
-    "delivery_policy.txt": """Nykaa Delivery Policy
+    "delivery_policy.txt": """Nykaa Delivery Policy — Project Assumptions
 
-Delivery timelines depend on the delivery address, product availability, and courier service.
-Customers should ensure their address and contact details are correct.
-If delivery is delayed, customers should check their tracking information for updates.""",
+For this project, the estimated delivery SLA is 2–4 business days for metro areas and 4–7 business days for other serviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more than 2 business days beyond the applicable estimate, the case should be escalated if tracking does not resolve the issue. These SLAs are fictional project assumptions, not verified official Nykaa policies.""",
 
-    "damaged_product_policy.txt": """Nykaa Damaged Product Policy
+    "damaged_product_policy.txt": """Nykaa Damaged Product Policy — Project Assumptions
 
-Customers who receive a damaged product should report the issue through customer support.
-They may be asked to provide photographs and order details for verification.
-Resolution depends on the product, the evidence provided, and the applicable policy.""",
+Customers who receive a damaged or defective product should report the issue to customer support within 48 hours of delivery for this project. They should provide the order details and clear photographs when requested so the claim can be assessed. Resolution may involve a return, replacement, or refund depending on eligibility and verification. The 48-hour reporting period is a fictional project assumption, not a verified official Nykaa policy.""",
 
-    "exchange_policy.txt": """Nykaa Exchange Policy
+    "exchange_policy.txt": """Nykaa Exchange Policy — Project Assumptions
 
-Exchange eligibility depends on the product category and applicable policy.
-Customers should check whether their item qualifies before requesting an exchange.
-Some products may require a return and a separate replacement order instead.""",
+For this project, size exchanges may be requested for eligible Apparel and Footwear products within 7 days of delivery, subject to replacement-size availability. Electronics, Home, and Beauty products are not assumed to qualify for size exchange; their eligibility must be checked against the applicable product policy. Some cases may require a return followed by a separate replacement order. These conditions are fictional project assumptions, not verified official Nykaa policies.""",
 
-    "beauty_product_policy.txt": """Nykaa Beauty Product Policy
+    "loyalty_points_policy.txt": """Nykaa Loyalty Points Redemption Policy — Project Assumptions
 
-Beauty products should be checked for their product-specific usage and storage instructions.
-Opened or used products may have different return eligibility because of hygiene considerations.
-Customers should review the applicable policy before requesting a return.""",
+Customers may redeem loyalty points only when their account and purchase meet the configured redemption conditions. For this project, points can cover up to 10% of an eligible order value, provided the account has enough available points. Available balance and eligibility must be checked before points are applied, and points cannot be promised as redeemable without that check. The 10% limit is a fictional project assumption, not a verified official Nykaa policy.""",
 
-    "warranty_policy.txt": """Nykaa Warranty Policy
+    "warranty_policy.txt": """Nykaa Warranty Policy — Project Assumptions
 
-Warranty coverage depends on the product and the manufacturer's terms.
-Customers should retain their purchase details and any warranty documentation.
-Warranty claims may require proof of purchase and an assessment of the reported issue.""",
+For this project, eligible Electronics products are assumed to have a 12-month warranty, while eligible Home appliances are assumed to have a 6-month warranty, subject to manufacturer terms and proof of purchase. Apparel, Footwear, and Beauty products have no additional project-assumed warranty unless the product listing or manufacturer documentation explicitly states otherwise. Warranty coverage starts from the purchase date and excludes issues not covered by the applicable manufacturer terms. These periods are fictional project assumptions, not verified official Nykaa policies.""",
 
-    "escalation_policy.txt": """Nykaa Support Escalation Policy
+    "escalation_policy.txt": """Nykaa Support Escalation Policy — Project Assumptions
 
-Issues that cannot be resolved using available order information or documented policies should be escalated.
-Suspected payment problems, repeated delivery failures, and unresolved complaints may require human support.
-The support agent should explain the reason for escalation and avoid promising an unconfirmed outcome."""
+Level 1 handles routine policy questions and order-status requests using the knowledge base and verified order information. Level 2 handles unresolved delivery delays, return or refund disputes, and exchange-eligibility questions. Level 3 handles suspected payment discrepancies, possible duplicate charges, suspected fraud, and unresolved complaints requiring specialist review. The agent must explain why escalation is needed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.""",
 }
 
-# Create the folder if it does not already exist.
 folder.mkdir(parents=True, exist_ok=True)
 
-# Create each document inside the knowledge-base folder.
-for filename, content in documents.items():
-    (folder / filename).write_text(content, encoding="utf-8")
+for filename, text in documents.items():
+    (folder / filename).write_text(text.strip() + "\n", encoding="utf-8")
 
-print(f"Created {len(documents)} knowledge-base documents.")
+print(f"Created/updated {len(documents)} knowledge-base documents.")
+print("Manual documents left untouched: return_policy.txt, shipping_policy.txt")
+print("Reminder: numerical policy values are fictional project assumptions.")

@@ -1,5 +1,0 @@
-Nykaa Order Tracking
-
-Customers can check order progress using their order details.
-Tracking information becomes available when the relevant shipment information is updated.
-Tracking updates may take time to appear after an order is dispatched.

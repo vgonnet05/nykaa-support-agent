@@ -1,5 +1,3 @@
-Nykaa Payment Policy
+Nykaa Payment Policy — Project Assumptions
 
-Customers can use the payment methods available at checkout.
-A payment may fail because of bank restrictions, insufficient funds, or a technical issue.
-Customers should verify their payment status before attempting another payment.
+Customers can use the payment methods offered at checkout, and a payment may fail because of bank restrictions, insufficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider or transaction status indicates that it is appropriate. Loyalty-point redemption requires an eligible account, available points, and a qualifying purchase. These rules are project assumptions and are not verified official Nykaa policies.

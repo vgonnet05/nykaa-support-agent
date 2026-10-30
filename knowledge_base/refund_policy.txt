@@ -1,5 +1,3 @@
-Nykaa Refund Policy
+Nykaa Refund Policy — Project Assumptions
 
-Refund eligibility depends on the order status and applicable product policy.
-Approved refunds are processed through the applicable payment method or refund process.
-The time required for a refund to appear may vary by payment provider.
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the applicable product policy. These timelines and conditions are fictional project assumptions, not verified official Nykaa policies.

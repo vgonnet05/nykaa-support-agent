@@ -1,5 +1,3 @@
-Nykaa Warranty Policy
+Nykaa Warranty Policy — Project Assumptions
 
-Warranty coverage depends on the product and the manufacturer's terms.
-Customers should retain their purchase details and any warranty documentation.
-Warranty claims may require proof of purchase and an assessment of the reported issue.
+For this project, eligible Electronics products are assumed to have a 12-month warranty, while eligible Home appliances are assumed to have a 6-month warranty, subject to manufacturer terms and proof of purchase. Apparel, Footwear, and Beauty products have no additional project-assumed warranty unless the product listing or manufacturer documentation explicitly states otherwise. Warranty coverage starts from the purchase date and excludes issues not covered by the applicable manufacturer terms. These periods are fictional project assumptions, not verified official Nykaa policies.

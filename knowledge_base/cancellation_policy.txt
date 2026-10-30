@@ -1,5 +1,3 @@
-Nykaa Cancellation Policy
+Nykaa Cancellation Policy — Project Assumptions
 
-Customers may request cancellation before an order is dispatched.
-Cancellation availability depends on the current order status.
-Orders that have already shipped may require a return request instead.
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumptions and are not verified official Nykaa policies.

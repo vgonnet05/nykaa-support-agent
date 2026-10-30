@@ -1,3 +1,3 @@
-Nykaa Return Policy
+Nykaa Return Policy — Project Assumptions
 
-Customers can request returns for eligible products within the applicable return window. Products must meet the return conditions specified for their category. Certain products, including some personal care and beauty items, may be non-returnable for hygiene reasons. Customers should check the product-specific return policy before initiating a return.
+For this project, eligible Apparel, Footwear, and Home products may be returned within 7 days of delivery, while eligible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. These timelines and conditions are fictional project assumptions for testing and are not verified official Nykaa policies.

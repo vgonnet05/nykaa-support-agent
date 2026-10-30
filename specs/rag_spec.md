@@ -101,8 +101,9 @@ Record per-query calculations and recommend a strategy based on the observed met
 - [x] Implement top-k retrieval.
 - [x] Evaluated top-1 cosine similarity using 3 in-scope and 2 out-of-scope queries.
 - [x] Selected a provisional similarity threshold of 0.20.
+- [x] Compare document-level precision and recall.
+- [x] Record per-query calculations and recommend a chunking strategy.
 
 ### Pending
-- [ ] Compare document-level precision and recall.
-- [ ] Record per-query calculations and recommend a chunking strategy.
+None
 

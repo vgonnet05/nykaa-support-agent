@@ -90,7 +90,13 @@ def build_collections():
     fixed_embeddings = embedding_model.encode(
         [chunk["text"] for chunk in fixed_chunks]
     )
-
+    # Clear existing records so renamed or deleted documents cannot remain.
+    sentence_collection.delete(
+        ids=sentence_collection.get()["ids"]
+    )
+    fixed_collection.delete(
+        ids=fixed_collection.get()["ids"]
+    )
     # Insert or update the sentence-based chunks in ChromaDB.
     sentence_collection.upsert(
         ids=[chunk["id"] for chunk in sentence_chunks],

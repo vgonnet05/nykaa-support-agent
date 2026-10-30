@@ -11,16 +11,24 @@ model = load_embedding_model()
 
 evaluation_cases = [
     {
-        "query": "How can I get my money back?",
+        "query": "What is the refund timeline for a cash-on-delivery order?",
         "expected_sources": ["refund_policy.txt"]
     },
     {
-        "query": "How do I track my order shipment?",
-        "expected_sources": ["order_tracking.txt"]
+        "query": "Which countries can Nykaa ship orders to internationally?",
+        "expected_sources": ["international_shipping_policy.txt"]
     },
     {
         "query": "Can I return a damaged product?",
         "expected_sources": ["damaged_product_policy.txt"]
+    },
+    {
+        "query": "How long does delivery take after dispatch?",
+        "expected_sources": ["delivery_policy.txt"]
+    },
+    {
+        "query": "Can I exchange the size of my footwear?",
+        "expected_sources": ["exchange_policy.txt"]
     },
     {
         "query": "What is the capital of France?",

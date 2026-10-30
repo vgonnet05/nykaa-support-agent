@@ -1,0 +1,3 @@
+Nykaa International Shipping Policy — Project Assumptions
+
+International shipping availability depends on the destination country and applicable product restrictions. For this project, international delivery is treated as unavailable unless the destination is explicitly listed as supported in the configured policy. Customers should confirm destination eligibility, product eligibility, and shipping charges before placing an order. This rule is a project assumption, not a verified official Nykaa policy.

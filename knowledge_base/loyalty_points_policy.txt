@@ -1,0 +1,3 @@
+Nykaa Loyalty Points Redemption Policy — Project Assumptions
+
+Customers may redeem loyalty points only when their account and purchase meet the configured redemption conditions. For this project, points can cover up to 10% of an eligible order value, provided the account has enough available points. Available balance and eligibility must be checked before points are applied, and points cannot be promised as redeemable without that check. The 10% limit is a fictional project assumption, not a verified official Nykaa policy.

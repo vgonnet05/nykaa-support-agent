@@ -1,5 +1,3 @@
-Nykaa Support Escalation Policy
+Nykaa Support Escalation Policy — Project Assumptions
 
-Issues that cannot be resolved using available order information or documented policies should be escalated.
-Suspected payment problems, repeated delivery failures, and unresolved complaints may require human support.
-The support agent should explain the reason for escalation and avoid promising an unconfirmed outcome.
+Level 1 handles routine policy questions and order-status requests using the knowledge base and verified order information. Level 2 handles unresolved delivery delays, return or refund disputes, and exchange-eligibility questions. Level 3 handles suspected payment discrepancies, possible duplicate charges, suspected fraud, and unresolved complaints requiring specialist review. The agent must explain why escalation is needed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.

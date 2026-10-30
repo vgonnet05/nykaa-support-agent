@@ -1,5 +1,3 @@
-Nykaa Exchange Policy
+Nykaa Exchange Policy — Project Assumptions
 
-Exchange eligibility depends on the product category and applicable policy.
-Customers should check whether their item qualifies before requesting an exchange.
-Some products may require a return and a separate replacement order instead.
+For this project, size exchanges may be requested for eligible Apparel and Footwear products within 7 days of delivery, subject to replacement-size availability. Electronics, Home, and Beauty products are not assumed to qualify for size exchange; their eligibility must be checked against the applicable product policy. Some cases may require a return followed by a separate replacement order. These conditions are fictional project assumptions, not verified official Nykaa policies.
