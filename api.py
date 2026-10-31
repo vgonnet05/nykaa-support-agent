@@ -23,12 +23,13 @@ from vector_store import (
     sentence_collection,
 )
 
-# Import session memory functions
-from conversation_memory import get_session_history
+from conversation_memory import get_session_history # Import session memory functions
+import time # Import tools for request timing.
+from guardrails import mask_pii # Import the existing PII masking function.
+from structured_logging import log_request # Import the structured request logger.
 
 # Create the FastAPI application
 app = FastAPI(title="Nykaa Support Agent API")
-
 
 # Request model for customer support questions
 class AskRequest(BaseModel):
@@ -57,133 +58,210 @@ class AddDocumentResponse(BaseModel):
 # Define the POST endpoint for customer support questions
 @app.post("/ask", response_model=AskResponse)
 def ask_question(request: AskRequest):
-    # Pass the customer's question and optional order ID
-    # to the existing support workflow
-    result = handle_support_request(
-        question=request.question,
-        record_id=request.record_id
-    )
+    # Start measuring request processing time.
+    start_time = time.perf_counter()
 
-    # Return the workflow result as a validated API response
-    return result
+    # Mask PII before logging the request.
+    safe_question = mask_pii(request.question)
 
-# Define the POST endpoint for adding knowledge-base documents
+    # Track whether the request succeeds or fails.
+    status = "success"
+
+    try:
+        # Pass the original question to the workflow.
+        # The workflow independently masks PII before processing.
+        result = handle_support_request(
+            question=request.question,
+            record_id=request.record_id
+        )
+
+        # Return the validated API response.
+        return result
+
+    except Exception:
+        # Record the failure without logging sensitive exception details.
+        status = "error"
+        raise
+
+    finally:
+        # Write one structured log entry for this request.
+        log_request(
+            endpoint="/ask",
+            request_text=safe_question,
+            start_time=start_time,
+            status=status,
+        )
+
+# Define the POST endpoint for adding knowledge-base documents.
 @app.post("/add-document", response_model=AddDocumentResponse)
 def add_document(request: AddDocumentRequest):
+    # Start measuring request processing time.
+    start_time = time.perf_counter()
 
-    # Accept only plain .txt filenames, preventing directory traversal
-    filename = request.filename
-    if Path(filename).name != filename or not filename.endswith(".txt"):
-        raise HTTPException(
-            status_code=400,
-            detail="Provide a valid .txt filename without a directory path."
-        )
-
-    # Prevent empty documents and duplicate filenames
-    if not request.content.strip():
-        raise HTTPException(status_code=400, detail="Document content cannot be empty.")
-
-    KNOWLEDGE_BASE_DIR.mkdir(parents=True, exist_ok=True)
-    file_path = KNOWLEDGE_BASE_DIR / filename
-
-    if file_path.exists():
-        raise HTTPException(status_code=409, detail="This document already exists.")
-
-    # Save the document to the knowledge-base directory
-    file_path.write_text(request.content, encoding="utf-8")
-
-    # Prepare the document in the format expected by the chunking functions
-    document = {
-        "source": filename,
-        "topic": Path(filename).stem,
-        "text": request.content
-    }
-
-    # Split this document into chunks for both existing collections
-    fixed_chunks = fixed_size_chunking([document])
-    sentence_chunks = sentence_based_chunking([document])
-
-    # Load the embedding model and convert each chunk into a vector
-    model = load_embedding_model()
-
-    # Add fixed-size chunks to the collection used by support answers
-    if fixed_chunks:
-        fixed_embeddings = model.encode(
-            [chunk["text"] for chunk in fixed_chunks]
-        ).tolist()
-
-        fixed_collection.upsert(
-            ids=[chunk["id"] for chunk in fixed_chunks],
-            documents=[chunk["text"] for chunk in fixed_chunks],
-            # Build ChromaDB metadata from the chunk's existing fields
-            metadatas=[
-                {
-                    "source": chunk["source"],
-                    "topic": chunk["topic"],
-                    "chunking_strategy": chunk["chunking_strategy"]
-                }
-                for chunk in fixed_chunks
-    ],
-            embeddings=fixed_embeddings
-        )
-
-    # Also update the sentence-based collection
-    if sentence_chunks:
-        sentence_embeddings = model.encode(
-            [chunk["text"] for chunk in sentence_chunks]
-        ).tolist()
-
-        sentence_collection.upsert(
-            ids=[chunk["id"] for chunk in sentence_chunks],
-            documents=[chunk["text"] for chunk in sentence_chunks],
-            # Build metadata for sentence-based chunks
-            metadatas=[
-                {
-                    "source": chunk["source"],
-                    "topic": chunk["topic"],
-                    "chunking_strategy": chunk["chunking_strategy"]
-                }
-                for chunk in sentence_chunks
-            ],
-            embeddings=sentence_embeddings
-        )
-
-    # Return a confirmation to the API caller
-    return AddDocumentResponse(
-        filename=filename,
-        chunks_added=len(fixed_chunks),
-        message="Document added to the knowledge base successfully."
+    # Mask PII before logging the document text.
+    safe_request_text = (
+        f"filename={request.filename}; content={mask_pii(request.content)}"
     )
 
-# Define a WebSocket endpoint for multi-turn customer conversations
+    # Track whether the request succeeds or fails.
+    status = "success"
+
+    try:
+        # Accept only plain .txt filenames, preventing directory traversal.
+        filename = request.filename
+        if Path(filename).name != filename or not filename.endswith(".txt"):
+            raise HTTPException(
+                status_code=400,
+                detail="Provide a valid .txt filename without a directory path."
+            )
+
+        # Prevent empty documents and duplicate filenames.
+        if not request.content.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Document content cannot be empty."
+            )
+
+        KNOWLEDGE_BASE_DIR.mkdir(parents=True, exist_ok=True)
+        file_path = KNOWLEDGE_BASE_DIR / filename
+
+        if file_path.exists():
+            raise HTTPException(
+                status_code=409,
+                detail="This document already exists."
+            )
+
+        # Save the document to the knowledge-base directory.
+        file_path.write_text(request.content, encoding="utf-8")
+
+        # Prepare the document for chunking.
+        document = {
+            "source": filename,
+            "topic": Path(filename).stem,
+            "text": request.content
+        }
+
+        # Split the document using both existing strategies.
+        fixed_chunks = fixed_size_chunking([document])
+        sentence_chunks = sentence_based_chunking([document])
+
+        # Load the embedding model.
+        model = load_embedding_model()
+
+        # Add fixed-size chunks to the existing collection.
+        if fixed_chunks:
+            fixed_embeddings = model.encode(
+                [chunk["text"] for chunk in fixed_chunks]
+            ).tolist()
+
+            fixed_collection.upsert(
+                ids=[chunk["id"] for chunk in fixed_chunks],
+                documents=[chunk["text"] for chunk in fixed_chunks],
+                metadatas=[
+                    {
+                        "source": chunk["source"],
+                        "topic": chunk["topic"],
+                        "chunking_strategy": chunk["chunking_strategy"]
+                    }
+                    for chunk in fixed_chunks
+                ],
+                embeddings=fixed_embeddings
+            )
+
+        # Add sentence-based chunks to the existing collection.
+        if sentence_chunks:
+            sentence_embeddings = model.encode(
+                [chunk["text"] for chunk in sentence_chunks]
+            ).tolist()
+
+            sentence_collection.upsert(
+                ids=[chunk["id"] for chunk in sentence_chunks],
+                documents=[chunk["text"] for chunk in sentence_chunks],
+                metadatas=[
+                    {
+                        "source": chunk["source"],
+                        "topic": chunk["topic"],
+                        "chunking_strategy": chunk["chunking_strategy"]
+                    }
+                    for chunk in sentence_chunks
+                ],
+                embeddings=sentence_embeddings
+            )
+
+        # Return the existing confirmation response.
+        return AddDocumentResponse(
+            filename=filename,
+            chunks_added=len(fixed_chunks),
+            message="Document added to the knowledge base successfully."
+        )
+
+    except Exception:
+        # Record failures without exposing exception details in the log.
+        status = "error"
+        raise
+
+    finally:
+        # Write one structured log entry for this request.
+        log_request(
+            endpoint="/add-document",
+            request_text=safe_request_text,
+            start_time=start_time,
+            status=status,
+        )
+
+# Define a WebSocket endpoint for customer conversations.
 @app.websocket("/ws/chat")
 async def chat_websocket(websocket: WebSocket):
-
-    # Accept the client's WebSocket connection
+    # Accept the client's WebSocket connection.
     await websocket.accept()
 
-    # Use the supplied session ID, or create a default session
+    # Use the supplied session ID or create a default session.
     session_id = websocket.query_params.get("session_id", "default")
     history = get_session_history(session_id)
 
     try:
-        # Keep the connection open for multiple messages
+        # Keep the connection open for multiple messages.
         while True:
-            # Receive the customer's message
+            # Receive the customer's message.
             question = await websocket.receive_text()
 
-            # Store the customer's message in session memory
-            history.add_user_message(question)
+            # Start timing this individual message.
+            start_time = time.perf_counter()
 
-            # Process the message using the existing support workflow
-            result = handle_support_request(question)
+            # Mask PII before storing the message in session history.
+            safe_question = mask_pii(question)
 
-            # Convert the result to JSON and send it to the client
-            await websocket.send_json(result)
+            # Track whether processing succeeds or fails.
+            status = "success"
 
-            # Store the response in session memory
-            history.add_ai_message(str(result))
+            try:
+                # Store only the masked message in session memory.
+                history.add_user_message(safe_question)
+
+                # Process the original message.
+                # The support workflow independently masks it before processing.
+                result = handle_support_request(question)
+
+                # Send the result to the client.
+                await websocket.send_json(result)
+
+                # Store the response in session memory.
+                history.add_ai_message(str(result))
+
+            except Exception:
+                # Log the failure without recording exception details.
+                status = "error"
+                raise
+
+            finally:
+                # Write one JSONL entry for this message.
+                log_request(
+                    endpoint="/ws/chat",
+                    request_text=safe_question,
+                    start_time=start_time,
+                    status=status,
+                )
 
     except WebSocketDisconnect:
-        # Handle a client disconnect without crashing the server
-        print(f"WebSocket client disconnected: session {session_id}")
+        # Record the disconnection without exposing customer data.
+        print("WebSocket client disconnected")

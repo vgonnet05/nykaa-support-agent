@@ -229,3 +229,6 @@ chroma_db/
 
 # macOS metadata
 .DS_Store
+
+# Structured request logs
+logs/
