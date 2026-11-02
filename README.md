@@ -46,31 +46,31 @@ sample. The delivery query also retrieved a partially unrelated
 sentence, demonstrating that similarity alone does not guarantee
 relevance.
 
-    ## Task 5: Retrieval Evaluation
+## Task 5: Retrieval Evaluation
 
-    Both chunking strategies were evaluated using the same five in-scope
-    queries and two out-of-scope queries. Evaluation uses document-level
-    precision and recall, with the expected source document specified for
-    each in-scope query.
+Both chunking strategies were evaluated using five in-scope
+queries and two out-of-scope queries. Evaluation uses document-level
+precision and recall, with the expected source document specified for
+each in-scope query.
 
-    | Metric | Sentence-based chunking | Fixed-size chunking |
-    |---|---:|---:|
-    | Average precision | 0.37 | 0.47 |
-    | Average recall | 1.00 | 1.00 |
+| Metric | Sentence-based chunking | Fixed-size chunking |
+|---|---:|---:|
+| Average precision | 0.37 | 0.47 |
+| Average recall | 1.00 | 1.00 |
 
-    Fixed-size chunking achieved higher average precision (0.47 versus
-    0.37), while both strategies achieved an average recall of 1.00.
-    This means both retrieved the expected document for every in-scope
-    query, but fixed-size chunking returned fewer irrelevant documents
-    on average.
+Fixed-size chunking achieved higher average precision (0.47 versus
+0.37), while both strategies achieved an average recall of 1.00.
+This means both retrieved the expected document for every in-scope
+query, but fixed-size chunking returned fewer irrelevant documents
+on average.
 
-    Out-of-scope queries returned irrelevant policy documents, resulting
-    in zero precision. Recall is not applicable to these queries because
-    they have no expected source documents. The similarity threshold in
-    Task 4 provides a separate mechanism for rejecting unsupported
-    questions.
+Out-of-scope queries returned irrelevant policy documents, resulting
+in zero precision. Recall is not applicable to these queries because
+they have no expected source documents. The similarity threshold in
+Task 4 provides a separate mechanism for rejecting unsupported
+questions.
 
-    ### Per-Query Precision and Recall
+### Per-Query Precision and Recall
 
 For each in-scope query:
 
@@ -126,3 +126,174 @@ This result supports the threshold for the current synthetic dataset.
 However, the dataset is small and the delayed-shipment flag contributes
 60% to the score, so further testing would be needed before applying
 this threshold to real customer orders.
+
+## Task 7: CrewAI Integration
+
+The CrewAI workflow defines three agent roles:
+- **Retrieval agent:** retrieves relevant policy information.
+- **Lookup agent:** handles order lookups.
+- **Composer agent:** prepares the response.
+
+The workflow uses CrewAI's kickoff mechanism. Supporting notebook and evidence files are included in the repository.
+
+The deterministic mock setup demonstrates orchestration, not production LLM response quality.
+
+## Task 8: Conversation Memory
+
+`conversation_memory.py` demonstrates session-scoped in-memory conversation history.
+
+Tests check that messages remain available within the same session and that separate sessions have isolated histories.
+
+**Limitation:** Memory is lost when the process restarts. The WebSocket endpoint stores conversation history, but the current RAG answer-generation workflow does not use that history to contextualize answers.
+
+## Task 9: Structured Response Schema
+
+`response_schema.py` defines a Pydantic `SupportResponse` model with:
+- `answer`
+- `source_documents`
+- `requires_escalation`
+
+This defines a structured response contract. The current API uses its own response model, so this schema should not be assumed to validate every API response.
+
+## Task 10: Guardrails
+
+`guardrails.py` implements basic safeguards:
+- Masks supported Indian mobile-number patterns.
+- Detects a limited set of prompt-injection phrases.
+- Blocks detected injection attempts in the support workflow.
+
+**Limitations:** The masking does not cover every form of personal information, and the pattern-based injection detector is not comprehensive.
+
+## Task 11: FastAPI
+
+`api.py` provides these interfaces:
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /ask` | Process a support question, optionally with an order ID |
+| `POST /add-document` | Add a `.txt` policy document |
+| `WS /ws/chat` | Exchange support messages over WebSocket |
+
+The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections.
+
+**Known issue:** The workflow can return a `rejected` result when runtime limits are exceeded, but the declared `AskResponse` model permits only `policy`, `order`, and `blocked`. This mismatch should be resolved before production use.
+
+## Task 12: Structured Logging
+
+`structured_logging.py` appends JSON Lines records to `logs/requests.jsonl`.
+
+Each record contains a UTC timestamp, trace ID, endpoint, masked request text, duration in milliseconds, and request status.
+
+Logs are generated at runtime and excluded from version control. Phone-number masking does not guarantee that all sensitive information is removed.
+
+## Task 13: Quality Evaluation
+
+`evaluate_quality.py` evaluates 15 support queries and writes results to `quality_evaluation_report.json`.
+
+Recorded average scores:
+
+| Metric | Average |
+|---|---:|
+| Accuracy | 0.900 |
+| Grounding | 0.933 |
+| Completeness | 0.900 |
+| Safety | 1.000 |
+
+The report uses `deterministic_mock` evaluation. These scores are not independent human evaluation or proof of production quality.
+
+The recorded answers show retrieval limitations, including irrelevant overlapping chunks and truncated or awkwardly assembled policy text.
+
+## Task 14: AutoGen Review
+
+The notebook includes an AutoGen review exercise using structured Pydantic verdicts and deterministic mock scenarios.
+
+This demonstrates orchestration and structured review for the tested scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
+
+## Task 15: Runtime Limits and Risk Classification
+
+`runtime_limits.py` defines:
+- Maximum estimated input: 2,000 tokens
+- Maximum estimated output: 500 tokens
+- Illustrative request cost cap: 0.20
+- Illustrative input price: 100 per million tokens
+- Illustrative output price: 250 per million tokens
+
+Token estimation uses approximately one token per four characters. These are estimates, not actual tokenizer counts or live provider prices.
+
+The risk classifier assigns low, medium, or high risk using a limited keyword list.
+
+**Limitations:** Risk labels do not themselves trigger human handoff in the current workflow. The cost calculation is illustrative and does not demonstrate actual model billing or cumulative budget enforcement.
+
+## Task 16: In-Memory Answer Cache
+
+`grounded_generation.py` caches answers using the normalized query and vector collection name. It tracks cache hits and misses and provides a function to clear the cache and reset its counters.
+
+**Limitation:** The cache is lost on process restart. Cached answers may also become stale after policy documents change unless the cache is cleared.
+
+## Setup and Installation
+
+Install dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+On Windows, activate with `.venv/Scripts/activate`.
+
+## Build the Knowledge Base
+
+Run from the project root:
+
+```bash
+python create_knowledge_base.py
+```
+
+This creates the local ChromaDB collections in `chroma_db/`.
+
+## Run the API
+
+```bash
+uvicorn api:app --reload
+```
+
+Open `/docs` on the local server for interactive API documentation.
+
+## Run Evaluations
+
+```bash
+python evaluate_retrieval.py
+python evaluate_quality.py
+```
+
+## Run Test Scripts
+
+```bash
+python test_guardrails.py
+python test_conversation_memory.py
+python test_websocket.py
+python test_websocket_disconnect.py
+```
+
+Verify each script's result before reporting it as passing. A pytest run that discovers zero tests does not demonstrate a passing test suite.
+
+## Known Limitations
+
+1. Policy documents contain fictional capstone assumptions, not verified official Nykaa policies.
+2. The workflow returns retrieved policy text rather than generating answers with a real LLM.
+3. Retrieval can include irrelevant chunks; the similarity threshold is provisional.
+4. Quality scores come from a deterministic mock evaluator.
+5. PII masking and prompt-injection detection cover limited patterns.
+6. Conversation history and the answer cache are in memory and are lost on restart.
+7. Risk classification does not currently trigger a human handoff.
+8. Token and cost estimates are illustrative, not actual model billing.
+9. The API response schema does not include the workflow's `rejected` response type.
+10. Production readiness has not been established through independent evaluation, security review, or real-world testing.
+
+## Summary
+
+This capstone combines synthetic order data, a policy knowledge base, embedding-based retrieval, chunking experiments, order lookup, CrewAI and AutoGen exercises, memory, guardrails, FastAPI, structured logging, runtime limits, evaluation, and caching.
+
+It demonstrates these components in a deterministic learning environment. Evaluation results and limitations should be considered before extending the system to real customer-support use cases.

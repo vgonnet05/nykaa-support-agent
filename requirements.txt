@@ -1,0 +1,13 @@
+chromadb==1.5.9
+sentence-transformers==5.7.0
+crewai==1.15.34
+autogen-agentchat==0.7.5
+autogen-core==0.7.5
+fastapi==0.141.1
+uvicorn==0.54.0
+pydantic==2.12.5
+langchain-core==1.7.1
+nest-asyncio==1.6.0
+httpx==0.28.1
+protobuf==5.29.6
+googleapis-common-protos==1.72.0
