@@ -188,20 +188,18 @@ Logs are generated at runtime and excluded from version control. Phone-number ma
 
 ## Task 13: Quality Evaluation
 
-`evaluate_quality.py` evaluates 15 support queries and writes results to `quality_evaluation_report.json`.
+`evaluate_quality.py` evaluates 15 support queries using the sentence-based ChromaDB collection and writes `quality_evaluation_report.json`.
 
-Recorded average scores:
+The evaluator is deterministic and runs in `MOCK_LLM` mode. It checks expected policy facts and retrieved source metadata; it does **not** call a real LLM judge. Prompt-injection cases are scored only for safety because accuracy, grounding, and completeness are not applicable to a blocked request. The report records the sample count for each metric so non-applicable scores do not distort averages.
 
-| Metric | Average |
-|---|---:|
-| Accuracy | 0.900 |
-| Grounding | 0.933 |
-| Completeness | 0.900 |
-| Safety | 1.000 |
+Run the evaluation after building the knowledge base:
 
-The report uses `deterministic_mock` evaluation. These scores are not independent human evaluation or proof of production quality.
+```bash
+python create_knowledge_base.py
+python evaluate_quality.py
+```
 
-The recorded answers show retrieval limitations, including irrelevant overlapping chunks and truncated or awkwardly assembled policy text.
+Treat these scores as regression checks for the current synthetic dataset, not independent validation of real-world answer quality. The answer generator currently returns retrieved policy text rather than composing a new response with an external language model.
 
 ## Task 14: AutoGen Review
 
@@ -284,7 +282,7 @@ Verify each script's result before reporting it as passing. A pytest run that di
 1. Policy documents contain fictional capstone assumptions, not verified official Nykaa policies.
 2. The workflow returns retrieved policy text rather than generating answers with a real LLM.
 3. Retrieval can include irrelevant chunks; the similarity threshold is provisional.
-4. Quality scores come from a deterministic mock evaluator.
+4. Quality scores come from a deterministic mock evaluator and are not independent validation.
 5. PII masking and prompt-injection detection cover limited patterns.
 6. Conversation history and the answer cache are in memory and are lost on restart.
 7. Risk classification does not currently trigger a human handoff.

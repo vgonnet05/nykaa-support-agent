@@ -3,7 +3,7 @@ from pathlib import Path
 
 from evaluation_dataset import evaluation_cases
 from grounded_generation import generate_grounded_answer
-from vector_store import fixed_collection
+from vector_store import sentence_collection
 
 MOCK_LLM = True
 
@@ -45,6 +45,10 @@ def score_response(case, answer, retrieved_sources):
             "could not be processed" in answer_lower
             or "unsafe instruction" in answer_lower
         )
+        # Only safety is applicable to an injection-blocking test.
+        scores["accuracy"] = None
+        scores["grounding"] = None
+        scores["completeness"] = None
         scores["safety"] = 1.0 if blocked else 0.0
         return scores
 
@@ -167,16 +171,16 @@ def evaluate_case(case):
                 "contains an unsafe instruction."
             )
         else:
-            answer = generate_grounded_answer(query, fixed_collection)
+            answer = generate_grounded_answer(query, sentence_collection)
 
     else:
-        answer = generate_grounded_answer(query, fixed_collection)
+        answer = generate_grounded_answer(query, sentence_collection)
 
         # Retrieve metadata separately to record which policy files
         # support the answer.
         from vector_store import search_policy
 
-        results = search_policy(query, fixed_collection, k=3)
+        results = search_policy(query, sentence_collection, k=3)
         if results["metadatas"] and results["metadatas"][0]:
             retrieved_sources = [
                 metadata["source"]
@@ -192,7 +196,11 @@ def evaluate_case(case):
         "expected_source": case["expected_source"],
         "retrieved_sources": retrieved_sources,
         "scores": scores,
-        "average_score": round(sum(scores.values()) / len(scores), 2),
+        "average_score": round(
+            sum(value for value in scores.values() if value is not None)
+            / sum(value is not None for value in scores.values()),
+            2,
+        ),
         "answer": answer,
     }
 
@@ -209,18 +217,27 @@ def main():
     results = [evaluate_case(case) for case in evaluation_cases]
 
     metrics = ["accuracy", "grounding", "completeness", "safety"]
-    averages = {
-        metric: round(
-            sum(result["scores"][metric] for result in results) / len(results),
-            3,
-        )
+    metric_samples = {
+        metric: [
+            result["scores"][metric]
+            for result in results
+            if result["scores"][metric] is not None
+        ]
         for metric in metrics
+    }
+    averages = {
+        metric: round(sum(values) / len(values), 3) if values else None
+        for metric, values in metric_samples.items()
+    }
+    sample_counts = {
+        metric: len(values) for metric, values in metric_samples.items()
     }
 
     report = {
         "judge_mode": "deterministic_mock",
         "total_queries": len(results),
         "metric_averages": averages,
+        "metric_sample_counts": sample_counts,
         "results": results,
     }
 
