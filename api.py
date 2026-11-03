@@ -39,8 +39,15 @@ class AskRequest(BaseModel):
 
 # Response model for customer support answers
 class AskResponse(BaseModel):
-    type: Literal["policy", "order", "blocked"]  # Response category
-    result: str | dict[str, Any]  # Answer or order details
+    type: Literal[
+        "policy",
+        "order",
+        "blocked",
+        "rejected",
+        "escalation",
+    ]
+    result: str | dict[str, Any]
+    risk: Literal["low", "medium", "high"] | None = None
 
 
 # Request model for adding a knowledge-base document
