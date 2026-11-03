@@ -44,6 +44,17 @@ def handle_support_request(
     risk_level = classify_risk(masked_question)
     question_lower = masked_question.lower()
 
+    # Governance: escalate high-risk requests for human review.
+    if risk_level == "high":
+        return {
+            "type": "escalation",
+            "risk": "high",
+            "result": (
+                "Your request requires additional review by our "
+                "customer support team. Please contact customer support."
+            ),
+        }
+
     if record_id and any(
         word in question_lower
         for word in ("order", "track", "shipment", "status", "delivery")
