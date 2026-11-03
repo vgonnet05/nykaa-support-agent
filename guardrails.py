@@ -5,11 +5,12 @@ import re
 
 def mask_pii(text: str) -> str:
     """
-    Mask Indian mobile numbers in customer messages.
+    Mask Indian mobile numbers and payment-card last-four digits.
 
     Examples:
-        9876543210      -> **********
-        +91 9876543210  -> **************
+        9876543210          -> **********
+        +91 9876543210      -> **************
+        card ending in 1234 -> card ending in ****
     """
 
     # Match a 10-digit Indian mobile number.
@@ -25,7 +26,19 @@ def mask_pii(text: str) -> str:
         text,
     )
 
-    # Return the message with phone numbers masked.
+    # Mask the last four digits when a customer explicitly identifies
+    # them as a payment-card suffix (for example, "card ending 1234").
+    card_suffix_pattern = (
+        r"((?:credit|debit|payment)?\\s*card\\b[^\\d]{0,30})(\\d{4})\\b"
+    )
+    masked_text = re.sub(
+        card_suffix_pattern,
+        lambda match: match.group(1) + "****",
+        masked_text,
+        flags=re.IGNORECASE,
+    )
+
+    # Return the message with phone numbers and card suffixes masked.
     return masked_text
 
 # Define phrases commonly associated with prompt-injection attempts.
