@@ -17,7 +17,14 @@ assert "9876543210" not in masked_text
 # Verify that the message was not incorrectly flagged as injection.
 assert is_injection is False
 
-print("PASS: PII masking")
+# Card last-four digits should also be masked when identified as a card suffix.
+masked_card_text, _ = validate_input(
+    "The payment card ending in 1234 was charged."
+)
+assert "1234" not in masked_card_text
+assert "****" in masked_card_text
+
+print("PASS: Phone and payment-card last-four masking")
 
 
 # TEST 2: Prompt-injection detection
