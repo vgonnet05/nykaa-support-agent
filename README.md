@@ -292,7 +292,7 @@ Verify each script's result before reporting it as passing. A pytest run that di
 6. Conversation history and the answer cache are in memory and are lost on restart.
 7. High-risk requests are routed to a human-review escalation response; classification is based on a limited keyword list.
 8. Token and cost estimates are illustrative, not actual model billing.
-10. Production readiness has not been established through independent evaluation, security review, or real-world testing.
+9. Production readiness has not been established through independent evaluation, security review, or real-world testing.
 
 ## Summary
 
