@@ -136,7 +136,7 @@ The CrewAI workflow defines three agent roles:
 
 The workflow uses CrewAI's kickoff mechanism. Supporting notebook and evidence files are included in the repository.
 
-The deterministic mock setup demonstrates orchestration, not production LLM response quality.
+The deterministic mock setup demonstrates orchestration, not production LLM response quality. It does not require a paid LLM API key. Before running the CrewAI notebook, disable telemetry by setting `CREWAI_DISABLE_TELEMETRY=true` or `OTEL_SDK_DISABLED=true` in the runtime environment.
 
 ## Task 8: Conversation Memory
 
