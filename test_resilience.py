@@ -36,3 +36,51 @@ print("PASS: Order failure fallback")
 
 
 print("\nAll resilience tests passed!")
+
+
+# Test 3: Temporary retrieval failure followed by success
+import grounded_generation
+
+grounded_generation.clear_answer_cache()
+
+mock_results = {
+    "documents": [["Nykaa accepts returns under its return policy."]],
+    "distances": [[0.1]],
+}
+
+with patch(
+    "grounded_generation.search_policy",
+    side_effect=[RuntimeError("Temporary failure"), mock_results],
+) as mock_search, patch("grounded_generation.time.sleep"):
+
+    answer = grounded_generation.generate_grounded_answer(
+        "What is the return policy?",
+        type("MockCollection", (), {"name": "test_collection"})(),
+    )
+
+    assert mock_search.call_count == 2
+    assert "Nykaa accepts returns" in answer
+
+print("PASS: Retrieval retry succeeds after temporary failure")
+
+
+# Test 4: Persistent retrieval failure
+grounded_generation.clear_answer_cache()
+
+with patch(
+    "grounded_generation.search_policy",
+    side_effect=RuntimeError("Persistent failure"),
+) as mock_search, patch("grounded_generation.time.sleep"):
+
+    try:
+        grounded_generation.generate_grounded_answer(
+            "What is the cancellation policy?",
+            type("MockCollection", (), {"name": "test_collection"})(),
+        )
+        raise AssertionError("Expected retrieval exception")
+    except RuntimeError as error:
+        assert str(error) == "Persistent failure"
+
+    assert mock_search.call_count == 2
+
+print("PASS: Persistent retrieval failure stops after two attempts")
