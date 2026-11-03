@@ -176,8 +176,6 @@ This defines a structured response contract. The current API uses its own respon
 
 The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections.
 
-**Known issue:** The workflow can return a `rejected` result when runtime limits are exceeded, but the declared `AskResponse` model permits only `policy`, `order`, and `blocked`. This mismatch should be resolved before production use.
-
 ## Task 12: Structured Logging
 
 `structured_logging.py` appends JSON Lines records to `logs/requests.jsonl`.
@@ -294,7 +292,6 @@ Verify each script's result before reporting it as passing. A pytest run that di
 6. Conversation history and the answer cache are in memory and are lost on restart.
 7. High-risk requests are routed to a human-review escalation response; classification is based on a limited keyword list.
 8. Token and cost estimates are illustrative, not actual model billing.
-9. The API response schema does not include the workflow's `rejected` response type.
 10. Production readiness has not been established through independent evaluation, security review, or real-world testing.
 
 ## Summary
