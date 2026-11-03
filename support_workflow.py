@@ -1,4 +1,3 @@
-
 from grounded_generation import generate_grounded_answer
 from order_lookup import check_order_status
 from vector_store import fixed_collection
@@ -21,9 +20,8 @@ def handle_support_request(
     question: str,
     record_id: str | None = None
 ) -> dict:
-    """Validate, limit, classify, and route a customer support request."""
+    """Validate, limit, classify, and safely route a support request."""
 
-    # 1. Enforce input limits before calling downstream handlers.
     limits = check_runtime_limits(question)
 
     if not limits["allowed"]:
@@ -32,7 +30,6 @@ def handle_support_request(
             "reason": limits["reason"],
         }
 
-    # 2. Mask PII and detect prompt injection.
     masked_question, is_injection = validate_input(question)
 
     if is_injection:
@@ -44,24 +41,42 @@ def handle_support_request(
             ),
         }
 
-    # 3. Classify risk.
     risk_level = classify_risk(masked_question)
     question_lower = masked_question.lower()
 
-    # 4. Route order-related questions.
     if record_id and any(
         word in question_lower
         for word in ("order", "track", "shipment", "status", "delivery")
     ):
-        return {
-            "type": "order",
-            "risk": risk_level,
-            "result": handle_order_query(record_id),
-        }
+        try:
+            result = handle_order_query(record_id)
+            return {
+                "type": "order",
+                "risk": risk_level,
+                "result": result,
+            }
+        except Exception:
+            return {
+                "type": "order",
+                "risk": risk_level,
+                "result": {
+                    "error": "Order service is temporarily unavailable. Please try again later."
+                },
+            }
 
-    # 5. Route other requests to grounded policy retrieval.
-    return {
-        "type": "policy",
-        "risk": risk_level,
-        "result": handle_policy_query(masked_question),
-    }
+    try:
+        result = handle_policy_query(masked_question)
+        return {
+            "type": "policy",
+            "risk": risk_level,
+            "result": result,
+        }
+    except Exception:
+        return {
+            "type": "policy",
+            "risk": risk_level,
+            "result": (
+                "Policy information is temporarily unavailable. "
+                "Please try again later."
+            ),
+        }
