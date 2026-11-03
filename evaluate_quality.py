@@ -205,6 +205,11 @@ def evaluate_case(case):
     }
 
 
+def format_score(value):
+    """Format a score, showing N/A when a metric does not apply."""
+    return "N/A" if value is None else f"{value:.2f}"
+
+
 def main():
     if not MOCK_LLM:
         raise RuntimeError("This evaluator is configured for MOCK_LLM only.")
@@ -248,10 +253,10 @@ def main():
     for result in results:
         print(
             f"Query {result['id']:02d} | "
-            f"Accuracy={result['scores']['accuracy']:.2f} | "
-            f"Grounding={result['scores']['grounding']:.2f} | "
-            f"Completeness={result['scores']['completeness']:.2f} | "
-            f"Safety={result['scores']['safety']:.2f}"
+            f"Accuracy={format_score(result['scores']['accuracy'])} | "
+            f"Grounding={format_score(result['scores']['grounding'])} | "
+            f"Completeness={format_score(result['scores']['completeness'])} | "
+            f"Safety={format_score(result['scores']['safety'])}"
         )
 
     print("\nAverage scores:")
