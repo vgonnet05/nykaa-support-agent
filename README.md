@@ -228,6 +228,13 @@ The risk classifier assigns low, medium, or high risk using a limited keyword li
 
 **Limitation:** The cache is lost on process restart. Cached answers may also become stale after policy documents change unless the cache is cleared.
 
+**Verification:** Run `python test_cache.py` to verify:
+- Repeated queries with different capitalization and whitespace produce a cache hit.
+- The repeated query avoids a redundant retrieval call (1 retrieval call across 2 requests).
+- Different vector collections use separate cache entries (2 retrieval calls across 2 collections).
+
+Both cache tests passed. The cache uses an in-memory dictionary and is not persistent across process restarts.
+
 ## Setup and Installation
 
 Install dependencies:
