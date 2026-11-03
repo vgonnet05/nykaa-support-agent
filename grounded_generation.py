@@ -1,3 +1,4 @@
+import time
 
 from vector_store import (
     sentence_collection,
@@ -30,7 +31,17 @@ def generate_grounded_answer(query, collection):
 
     cache_misses += 1
 
-    results = search_policy(query, collection, k=3)
+    # Retry retrieval once if a technical exception occurs.
+    max_attempts = 2
+
+    for attempt in range(max_attempts):
+        try:
+            results = search_policy(query, collection, k=3)
+            break
+        except Exception:
+            if attempt == max_attempts - 1:
+                raise
+            time.sleep(0.5)
 
     if not results["documents"] or not results["documents"][0]:
         answer = "I don't know based on the available policy information."
