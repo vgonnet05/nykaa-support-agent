@@ -220,7 +220,7 @@ Token estimation uses approximately one token per four characters. These are est
 
 The risk classifier assigns low, medium, or high risk using a limited keyword list.
 
-**Limitations:** Risk labels do not themselves trigger human handoff in the current workflow. The cost calculation is illustrative and does not demonstrate actual model billing or cumulative budget enforcement.
+**Governance:** High-risk requests are escalated for human review by `handle_support_request` in `support_workflow.py`. This is a keyword-based project rule, not a comprehensive risk assessment. The cost calculation is illustrative and does not demonstrate actual model billing or cumulative budget enforcement.
 
 ## Task 16: In-Memory Answer Cache
 
@@ -292,7 +292,7 @@ Verify each script's result before reporting it as passing. A pytest run that di
 4. Quality scores come from a deterministic mock evaluator and are not independent validation.
 5. PII masking and prompt-injection detection cover limited patterns.
 6. Conversation history and the answer cache are in memory and are lost on restart.
-7. Risk classification does not currently trigger a human handoff.
+7. High-risk requests are routed to a human-review escalation response; classification is based on a limited keyword list.
 8. Token and cost estimates are illustrative, not actual model billing.
 9. The API response schema does not include the workflow's `rejected` response type.
 10. Production readiness has not been established through independent evaluation, security review, or real-world testing.
