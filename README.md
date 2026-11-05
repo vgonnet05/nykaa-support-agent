@@ -16,6 +16,30 @@ A hands-on learning project to understand and build an Agentic AI support agent 
 These choices provide balanced category coverage, realistic variation in
 order states and values, and sufficient delayed shipments to test escalation.
 
+## Task 2: Knowledge Base
+
+The repository contains 13 policy documents: the 12 required policy topics plus
+a supplemental shipping/tracking document. The required topics are return windows
+by category, COD refund timelines, delivery SLAs, reverse-pickup eligibility,
+warranty terms by category, cancellation, loyalty-point redemption, payment
+failure/retry, size exchange, damaged-item claims, international shipping
+restrictions, and the customer-support escalation matrix. Reverse-pickup
+eligibility is documented separately in reverse_pickup_policy.txt.
+
+The numerical timelines and conditions are fictional capstone assumptions,
+not verified official Nykaa policies. The three manually maintained files
+(return_policy.txt, shipping_policy.txt, and reverse_pickup_policy.txt) are
+preserved when create_knowledge_base.py is rerun.
+
+## Task 3: Chunking and Vector Storage
+
+chunking.py implements fixed-size chunks with overlap and sentence-based
+chunking. vector_store.py embeds both chunk sets with the local
+all-MiniLM-L6-v2 Sentence Transformers model and indexes them into separate
+ChromaDB collections: fixed_size_chunks and sentence_chunks. Run
+python vector_store.py after creating the policy documents to rebuild both
+collections.
+
 ## Task 4: Grounded Answer Generation
 
 The system retrieves the top three policy chunks and returns their
@@ -134,9 +158,11 @@ The CrewAI workflow defines three agent roles:
 - **Lookup agent:** handles order lookups.
 - **Composer agent:** prepares the response.
 
-The reproducible implementation is in crew_agents.py. It defines the Retrieval, Lookup and Response Composer agents, invokes the actual local RAG and order-lookup tools, and writes task7_tool_evidence.json plus transcripts/task7_crewai.txt.
+The reproducible implementation is in crew_agents.py. It defines the Retrieval, Lookup and Response Composer agents and invokes the actual local RAG and order-lookup tools through CrewAI kickoff_async(). The Composer task uses output_pydantic=SupportResponse, and the resulting CrewOutput.pydantic value is validated in code.
 
-Run it with python crew_agents.py after building the knowledge base and vector collections. The agent uses a deterministic CrewAI BaseLLM implementation; it does not call an external LLM provider. Set MOCK_LLM=true, CREWAI_DISABLE_TELEMETRY=true and OTEL_SDK_DISABLED=true.
+Only the Lookup Agent receives check_order_status. Retrieval receives only rag_policy_search, and the Composer receives no tools. Runtime assertions and test_least_autonomy.py verify this least-autonomy restriction. The run writes task7_tool_evidence.json plus transcripts/task7_crewai.txt.
+
+Run python crew_agents.py after building the knowledge base and vector collections. The deterministic CrewAI BaseLLM implementation makes no external LLM calls. Set MOCK_LLM=true, CREWAI_DISABLE_TELEMETRY=true and OTEL_SDK_DISABLED=true.
 
 ## Task 8: Conversation Memory
 
@@ -153,7 +179,7 @@ Tests check that messages remain available within the same session and that sepa
 - `source_documents`
 - `requires_escalation`
 
-This defines a structured response contract. The current API uses its own response model, so this schema should not be assumed to validate every API response.
+The CrewAI Composer task declares this model through output_pydantic=SupportResponse. crew_agents.py validates the returned structured CrewOutput against this Pydantic model and records the validated fields in its evidence transcript. test_response_schema.py also checks the schema independently. The FastAPI layer has its own request/response models.
 
 ## Task 10: Guardrails
 
@@ -180,15 +206,15 @@ The document endpoint validates filenames and content, rejects duplicate filenam
 
 `structured_logging.py` appends JSON Lines records to `logs/requests.jsonl`.
 
-Each record contains a UTC timestamp, trace ID, endpoint, masked request text, duration in milliseconds, and request status.
+Each record contains a UTC timestamp, trace ID, endpoint, masked request text, duration in milliseconds, and request status. The HTTP endpoints and WebSocket message handler log in finally blocks, including rejected/error paths.
 
-Logs are generated at runtime and excluded from version control. Phone-number masking does not guarantee that all sensitive information is removed.
+test_structured_logging.py verifies JSONL fields, unique trace IDs, timing, PII masking, and one log entry for representative /ask, /add-document, and /ws/chat requests. Logs are generated at runtime and excluded from version control. Phone-number and card-suffix masking cover the fixed-format PII required by the brief; this is not a general-purpose PII detector.
 
 ## Task 13: Quality Evaluation
 
 `evaluate_quality.py` evaluates 15 support queries using the sentence-based ChromaDB collection and writes `quality_evaluation_report.json`.
 
-The evaluator is deterministic and runs in `MOCK_LLM` mode. It checks expected policy facts and retrieved source metadata; it does **not** call a real LLM judge. Prompt-injection cases are scored only for safety because accuracy, grounding, and completeness are not applicable to a blocked request. The report records the sample count for each metric so non-applicable scores do not distort averages.
+The evaluator runs in deterministic `MOCK_LLM` mode and passes the rubric's JUDGE_PROMPT, expected answer, candidate response, and retrieved sources to a local mock judge. The mock judge uses transparent deterministic checks rather than a real external LLM call. All 15 queries receive numeric Accuracy, Grounding, Completeness, and Safety scores, including the prompt-injection refusal case, and the report contains all four averages. The 12 in-scope cases cover the 12 required knowledge-base topics; the remaining three are two out-of-scope questions and one prompt-injection case.
 
 Run the evaluation after building the knowledge base:
 
@@ -201,9 +227,9 @@ Treat these scores as regression checks for the current synthetic dataset, not i
 
 ## Task 14: AutoGen Review
 
-The reproducible implementation is in review_stage.py. It uses a two-agent AutoGen RoundRobinGroupChat with a Pydantic Verdict schema and deterministic mock model clients. Run python review_stage.py to demonstrate approval of a grounded draft and rejection/revision of a planted unsupported claim. The run writes transcripts/task14_autogen_review.txt.
+The reproducible implementation is in review_stage.py. It first runs the actual CrewAI crew and passes its Composer draft plus retrieved RAG/order context into a two-agent AutoGen RoundRobinGroupChat. The FinalEditor returns a structured Pydantic Verdict. One scenario approves the actual draft unchanged; the second injects an unsupported 30-day return promise and verifies that the review stage removes it. Run python review_stage.py. The run writes transcripts/task14_autogen_review.txt and task14_review_evidence.json.
 
-This demonstrates AutoGen orchestration and structured verdict handling for the defined test scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
+This demonstrates AutoGen orchestration and structured verdict handling for the defined deterministic scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
 
 ## Task 15: Runtime Limits and Risk Classification
 
@@ -216,9 +242,11 @@ This demonstrates AutoGen orchestration and structured verdict handling for the 
 
 Token estimation uses approximately one token per four characters. These are estimates, not actual tokenizer counts or live provider prices.
 
-The risk classifier assigns low, medium, or high risk using a limited keyword list.
+The risk classifier assigns low, medium, or high risk using a limited keyword list. The overall system is classified as **Medium risk** because the rubric explicitly places customer-support tickets in the Medium category. The agent handles support questions and synthetic order information; it does not make medical, hiring, or other high-impact decisions. Requests matching high-risk fraud or unauthorized-payment indicators are routed to a human-support escalation response.
 
-**Governance:** High-risk requests are escalated for human review by `handle_support_request` in `support_workflow.py`. This is a keyword-based project rule, not a comprehensive risk assessment. The cost calculation is illustrative and does not demonstrate actual model billing or cumulative budget enforcement.
+**Least autonomy:** Only the Lookup Agent is wired with check_order_status; Retrieval and Composer do not receive that tool. The crew checks this permission boundary at runtime and test_least_autonomy.py verifies the actual attached tool lists.
+
+**Runtime budget:** The workflow enforces estimated input/output token limits and a per-request cost cap. test_governance.py demonstrates both an oversized token request and a separate request whose estimated cost exceeds the configured cap. These prices are illustrative estimates, not actual provider billing or cumulative budget enforcement.
 
 ## Task 16: In-Memory Answer Cache
 
@@ -301,6 +329,7 @@ python test_guardrails.py
 python test_conversation_memory.py
 python test_response_schema.py
 python test_governance.py
+python test_least_autonomy.py
 python test_resilience.py
 python test_cache.py
 python test_api_contract.py
