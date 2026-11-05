@@ -229,7 +229,7 @@ Treat these scores as regression checks for the current synthetic dataset, not i
 
 ## Task 14: AutoGen Review
 
-The reproducible implementation is in review_stage.py. It first runs the actual CrewAI crew and passes its Composer draft plus retrieved RAG/order context into a two-agent AutoGen RoundRobinGroupChat. The FinalEditor returns a structured Pydantic Verdict. One scenario approves the actual draft unchanged; the second injects an unsupported 30-day return promise and verifies that the review stage removes it. Run python review_stage.py. The run writes transcripts/task14_autogen_review.txt and task14_review_evidence.json.
+The reproducible implementation is in review_stage.py. It runs the actual CrewAI crew for two distinct customer queries and passes each Composer draft plus its retrieved RAG/order context into a two-agent AutoGen RoundRobinGroupChat. The FinalEditor returns a structured Pydantic Verdict. The refund query is approved unchanged; the cancellation query receives a deliberately injected unsupported 30-day return promise, which the review stage removes. Run python review_stage.py. The run writes transcripts/task14_autogen_review.txt and task14_review_evidence.json.
 
 This demonstrates AutoGen orchestration and structured verdict handling for the defined deterministic scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
 
