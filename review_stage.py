@@ -154,6 +154,7 @@ def extract_verdict(result) -> Verdict:
 
 async def review_scenario(
     scenario: str,
+    customer_query: str,
     retrieved_context: str,
     crew_draft: str,
 ):
@@ -200,6 +201,7 @@ async def review_scenario(
     result = await team.run(
         task=(
             f"Scenario: {scenario}\n"
+            f"Customer query: {customer_query}\n"
             "Original retrieved context from the CrewAI tools:\n"
             f"{retrieved_context}\n\n"
             "Actual CrewAI Composer draft under review:\n"
@@ -221,34 +223,48 @@ async def review_scenario(
 
 
 async def run_review_demo() -> dict:
-    # Use the actual output of Task 7, not a separately invented sample draft.
-    crew_evidence = await asyncio.to_thread(run_crew_demo)
-    crew_draft = crew_evidence["final_response"]
-    retrieved_context = json.dumps(
-        crew_evidence["tool_results"],
-        indent=2,
-        ensure_ascii=False,
+    # Use two actual CrewAI runs with distinct customer queries, not invented drafts.
+    clean_crew_evidence = await asyncio.to_thread(
+        run_crew_demo, "How long does an approved refund take?", "ORD1001"
+    )
+    revision_crew_evidence = await asyncio.to_thread(
+        run_crew_demo, "What is the cancellation policy?", "ORD1002"
+    )
+    clean_draft = clean_crew_evidence["final_response"]
+    revision_draft = revision_crew_evidence["final_response"]
+    clean_context = json.dumps(
+        clean_crew_evidence["tool_results"], indent=2, ensure_ascii=False
+    )
+    revision_context = json.dumps(
+        revision_crew_evidence["tool_results"], indent=2, ensure_ascii=False
     )
 
-    clean_result, clean_verdict, clean_draft = await review_scenario(
-        "clean", retrieved_context, crew_draft
+    clean_result, clean_verdict, clean_submitted_draft = await review_scenario(
+        "clean", "How long does an approved refund take?", clean_context, clean_draft
     )
     revision_result, revision_verdict, injected_draft = await review_scenario(
-        "hallucination", retrieved_context, crew_draft
+        "hallucination", "What is the cancellation policy?", revision_context, revision_draft
     )
 
     transcript_parts = [
         "TASK 14 — AUTOGEN REVIEW OF THE ACTUAL CREWAI DRAFT",
         "Mode: deterministic MOCK_LLM; no external LLM API key.",
         "",
+        "CLEAN CASE — REFUND QUERY",
+        "Customer query: How long does an approved refund take?",
         "Retrieved context passed to AutoGen:",
-        retrieved_context,
-        "",
+        clean_context,
         "Actual CrewAI Composer draft:",
-        crew_draft,
-        "",
+        clean_draft,
         "CLEAN DRAFT — EXPECTED APPROVAL UNCHANGED",
-        f"Submitted draft:\n{clean_draft}",
+        f"Submitted draft:\n{clean_submitted_draft}",
+        "",
+        "REVISION CASE — CANCELLATION QUERY",
+        "Customer query: What is the cancellation policy?",
+        "Retrieved context passed to AutoGen:",
+        revision_context,
+        "Actual CrewAI Composer draft:",
+        revision_draft,
     ]
     for message in clean_result.messages:
         transcript_parts.append(f"[{message.source}]")
@@ -283,6 +299,10 @@ async def run_review_demo() -> dict:
         "mode": "MOCK_LLM",
         "external_llm_api_keys_required": False,
         "crew_draft_used": True,
+        "sample_queries": [
+            "How long does an approved refund take?",
+            "What is the cancellation policy?",
+        ],
         "clean_draft": clean_verdict.model_dump(),
         "hallucination_draft": revision_verdict.model_dump(),
         "status": "PASS",
