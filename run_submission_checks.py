@@ -49,8 +49,17 @@ def main() -> int:
         "AZURE_OPENAI_API_KEY",
         "MISTRAL_API_KEY",
         "COHERE_API_KEY",
+        "TOGETHER_API_KEY",
+        "FIREWORKS_API_KEY",
+        "DEEPSEEK_API_KEY",
+        "XAI_API_KEY",
+        "HUGGINGFACEHUB_API_TOKEN",
+        "HF_TOKEN",
     ):
         child_env.pop(key, None)
+    for key in list(child_env):
+        if key.endswith("_API_KEY"):
+            child_env.pop(key, None)
 
     results = []
     for name, args in COMMANDS:
