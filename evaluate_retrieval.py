@@ -11,7 +11,7 @@ model = load_embedding_model()
 
 evaluation_cases = [
     {
-        "query": "What is the refund timeline for a cash-on-delivery order?",
+        "query": "How can I get my money back?",
         "expected_sources": ["refund_policy.txt"]
     },
     {
@@ -23,12 +23,12 @@ evaluation_cases = [
         "expected_sources": ["damaged_product_policy.txt"]
     },
     {
-        "query": "How long does delivery take after dispatch?",
-        "expected_sources": ["delivery_policy.txt"]
+        "query": "What is the cancellation policy?",
+        "expected_sources": ["cancellation_policy.txt"]
     },
     {
-        "query": "Can I exchange the size of my footwear?",
-        "expected_sources": ["exchange_policy.txt"]
+        "query": "How long does delivery take?",
+        "expected_sources": ["delivery_policy.txt"]
     },
     {
         "query": "What is the capital of France?",
