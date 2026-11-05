@@ -1,0 +1,22 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_resilience.py
+exit_code=0
+
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+PASS: Policy failure fallback
+PASS: Order failure fallback
+
+All resilience tests passed!
+PASS: Retrieval retry succeeds after temporary failure
+PASS: Persistent retrieval failure stops after two attempts

@@ -1,0 +1,307 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python evaluate_grounded_answers.py
+exit_code=0
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Task 4 — Grounded Answer Demonstration
+Similarity = 1 - cosine distance; configured threshold = 0.20
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3908.67it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.6398
+
+Result 2:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.6450
+
+Result 3:
+Policy: fficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider
+Source: payment_policy.txt
+Distance: 0.6546
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.6398
+
+Result 2:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.6450
+
+Result 3:
+Policy: fficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider
+Source: payment_policy.txt
+Distance: 0.6546
+
+Query: How can I get my money back?
+Expected: in-scope
+Top similarity: 0.3602
+Expected source: grounded answer
+Actual: grounded answer
+PASS
+
+Result 1:
+Policy: Nykaa International Shipping Policy — Project Assumptions
+
+International shipping availability depends on the destination country and applicable product restrictions. For this project, international d
+Source: international_shipping_policy.txt
+Distance: 0.2620
+
+Result 2:
+Policy: tomers should confirm destination eligibility, product eligibility, and shipping charges before placing an order. This rule is a project assumption, not a verified official Nykaa policy.
+
+Source: international_shipping_policy.txt
+Distance: 0.3766
+
+Result 3:
+Policy: official Nykaa policies.
+
+Source: reverse_pickup_policy.txt
+Distance: 0.4843
+
+Result 1:
+Policy: Nykaa International Shipping Policy — Project Assumptions
+
+International shipping availability depends on the destination country and applicable product restrictions. For this project, international d
+Source: international_shipping_policy.txt
+Distance: 0.2620
+
+Result 2:
+Policy: tomers should confirm destination eligibility, product eligibility, and shipping charges before placing an order. This rule is a project assumption, not a verified official Nykaa policy.
+
+Source: international_shipping_policy.txt
+Distance: 0.3766
+
+Result 3:
+Policy: official Nykaa policies.
+
+Source: reverse_pickup_policy.txt
+Distance: 0.4843
+
+Query: Which countries can Nykaa ship orders to internationally?
+Expected: in-scope
+Top similarity: 0.7380
+Expected source: grounded answer
+Actual: grounded answer
+PASS
+
+Result 1:
+Policy: Nykaa Damaged Product Policy — Project Assumptions
+
+Customers who receive a damaged or defective product should report the issue to customer support within 48 hours of delivery for this project. They 
+Source: damaged_product_policy.txt
+Distance: 0.4456
+
+Result 2:
+Policy:  damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. These timelines and conditions a
+Source: return_policy.txt
+Distance: 0.5208
+
+Result 3:
+Policy: ecked against the applicable product policy. Some cases may require a return followed by a separate replacement order. These conditions are fictional project assumptions, not verified official Nykaa p
+Source: exchange_policy.txt
+Distance: 0.5276
+
+Result 1:
+Policy: Nykaa Damaged Product Policy — Project Assumptions
+
+Customers who receive a damaged or defective product should report the issue to customer support within 48 hours of delivery for this project. They 
+Source: damaged_product_policy.txt
+Distance: 0.4456
+
+Result 2:
+Policy:  damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. These timelines and conditions a
+Source: return_policy.txt
+Distance: 0.5208
+
+Result 3:
+Policy: ecked against the applicable product policy. Some cases may require a return followed by a separate replacement order. These conditions are fictional project assumptions, not verified official Nykaa p
+Source: exchange_policy.txt
+Distance: 0.5276
+
+Query: Can I return a damaged product?
+Expected: in-scope
+Top similarity: 0.5544
+Expected source: grounded answer
+Actual: grounded answer
+PASS
+
+Result 1:
+Policy: Nykaa Cancellation Policy — Project Assumptions
+
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need
+Source: cancellation_policy.txt
+Distance: 0.4085
+
+Result 2:
+Policy: order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti
+Source: cancellation_policy.txt
+Distance: 0.4780
+
+Result 3:
+Policy: ed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.
+
+Source: escalation_policy.txt
+Distance: 0.6071
+
+Result 1:
+Policy: Nykaa Cancellation Policy — Project Assumptions
+
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need
+Source: cancellation_policy.txt
+Distance: 0.4085
+
+Result 2:
+Policy: order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti
+Source: cancellation_policy.txt
+Distance: 0.4780
+
+Result 3:
+Policy: ed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.
+
+Source: escalation_policy.txt
+Distance: 0.6071
+
+Query: What is the cancellation policy?
+Expected: in-scope
+Top similarity: 0.5915
+Expected source: grounded answer
+Actual: grounded answer
+PASS
+
+Result 1:
+Policy: Nykaa Delivery Policy — Project Assumptions
+
+For this project, the estimated delivery SLA is 2–4 business days for metro areas and 4–7 business days for other serviceable areas, starting after dispatc
+Source: delivery_policy.txt
+Distance: 0.5250
+
+Result 2:
+Policy: n should be checked. If delivery is more than 2 business days beyond the applicable estimate, the case should be escalated if tracking does not resolve the issue. These SLAs are fictional project assu
+Source: delivery_policy.txt
+Distance: 0.5429
+
+Result 3:
+Policy: erviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more
+Source: delivery_policy.txt
+Distance: 0.5884
+
+Result 1:
+Policy: Nykaa Delivery Policy — Project Assumptions
+
+For this project, the estimated delivery SLA is 2–4 business days for metro areas and 4–7 business days for other serviceable areas, starting after dispatc
+Source: delivery_policy.txt
+Distance: 0.5250
+
+Result 2:
+Policy: n should be checked. If delivery is more than 2 business days beyond the applicable estimate, the case should be escalated if tracking does not resolve the issue. These SLAs are fictional project assu
+Source: delivery_policy.txt
+Distance: 0.5429
+
+Result 3:
+Policy: erviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more
+Source: delivery_policy.txt
+Distance: 0.5884
+
+Query: How long does delivery take?
+Expected: in-scope
+Top similarity: 0.4750
+Expected source: grounded answer
+Actual: grounded answer
+PASS
+
+Result 1:
+Policy: tions. For this project, international delivery is treated as unavailable unless the destination is explicitly listed as supported in the configured policy. Customers should confirm destination eligib
+Source: international_shipping_policy.txt
+Distance: 0.8732
+
+Result 2:
+Policy: erviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more
+Source: delivery_policy.txt
+Distance: 0.9052
+
+Result 3:
+Policy: licies.
+
+Source: refund_policy.txt
+Distance: 0.9083
+
+Result 1:
+Policy: tions. For this project, international delivery is treated as unavailable unless the destination is explicitly listed as supported in the configured policy. Customers should confirm destination eligib
+Source: international_shipping_policy.txt
+Distance: 0.8732
+
+Result 2:
+Policy: erviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more
+Source: delivery_policy.txt
+Distance: 0.9052
+
+Result 3:
+Policy: licies.
+
+Source: refund_policy.txt
+Distance: 0.9083
+
+Query: What is the capital of France?
+Expected: out-of-scope
+Top similarity: 0.1268
+Expected source: fallback
+Actual: fallback
+PASS
+
+Result 1:
+Policy: licies.
+
+Source: refund_policy.txt
+Distance: 0.9159
+
+Result 2:
+Policy: official Nykaa policies.
+
+Source: reverse_pickup_policy.txt
+Distance: 0.9432
+
+Result 3:
+Policy: ied official Nykaa policy.
+
+Source: international_shipping_policy.txt
+Distance: 0.9442
+
+Result 1:
+Policy: licies.
+
+Source: refund_policy.txt
+Distance: 0.9159
+
+Result 2:
+Policy: official Nykaa policies.
+
+Source: reverse_pickup_policy.txt
+Distance: 0.9432
+
+Result 3:
+Policy: ied official Nykaa policy.
+
+Source: international_shipping_policy.txt
+Distance: 0.9442
+
+Query: How can I train my pet dog?
+Expected: out-of-scope
+Top similarity: 0.0841
+Expected source: fallback
+Actual: fallback
+PASS
+
+Task 4 result: 7/7 queries passed.

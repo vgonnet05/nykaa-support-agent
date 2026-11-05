@@ -1,0 +1,146 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python vector_store.py
+exit_code=0
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3877.03it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+--- Collection build summary ---
+Sentence-based chunks: 23
+Fixed-size chunks: 46
+Sentence-based embeddings: (23, 384)
+Fixed-size embeddings: (46, 384)
+Sentence collection records: 23
+Fixed-size collection records: 46
+
+--- Sentence-based search ---
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the applicable product policy
+Source: refund_policy.txt
+Distance: 0.6387
+
+Result 2:
+Policy: Nykaa Return Policy — Project Assumptions
+
+For this project, eligible Apparel, Footwear, and Home products may be returned within 7 days of delivery, while eligible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available
+Source: return_policy.txt
+Distance: 0.7198
+
+Result 3:
+Policy: Nykaa Payment Policy — Project Assumptions
+
+Customers can use the payment methods offered at checkout, and a payment may fail because of bank restrictions, insufficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider or transaction status indicates that it is appropriate
+Source: payment_policy.txt
+Distance: 0.7615
+
+--- Fixed-size search ---
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.6398
+
+Result 2:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.6450
+
+Result 3:
+Policy: fficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider
+Source: payment_policy.txt
+Distance: 0.6546
+
+Evaluating collection: sentence_chunks
+------------------------------------------------------------
+
+Query: How can I get my money back?
+Expected scope: in_scope
+Top-1 cosine distance: 0.6387
+Top-1 cosine similarity: 0.3613
+Retrieved source: refund_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: How do I track my order shipment?
+Expected scope: in_scope
+Top-1 cosine distance: 0.6378
+Top-1 cosine similarity: 0.3622
+Retrieved source: delivery_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: Can I return a damaged product?
+Expected scope: in_scope
+Top-1 cosine distance: 0.4121
+Top-1 cosine similarity: 0.5879
+Retrieved source: damaged_product_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: What is the capital of France?
+Expected scope: out_of_scope
+Top-1 cosine distance: 1.0418
+Top-1 cosine similarity: -0.0418
+Retrieved source: delivery_policy.txt
+Threshold: 0.20
+Accepted as in-scope: False
+
+Query: How can I train my pet dog?
+Expected scope: out_of_scope
+Top-1 cosine distance: 0.9538
+Top-1 cosine similarity: 0.0462
+Retrieved source: payment_policy.txt
+Threshold: 0.20
+Accepted as in-scope: False
+
+Evaluating collection: fixed_size_chunks
+------------------------------------------------------------
+
+Query: How can I get my money back?
+Expected scope: in_scope
+Top-1 cosine distance: 0.6398
+Top-1 cosine similarity: 0.3602
+Retrieved source: refund_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: How do I track my order shipment?
+Expected scope: in_scope
+Top-1 cosine distance: 0.3701
+Top-1 cosine similarity: 0.6299
+Retrieved source: delivery_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: Can I return a damaged product?
+Expected scope: in_scope
+Top-1 cosine distance: 0.4456
+Top-1 cosine similarity: 0.5544
+Retrieved source: damaged_product_policy.txt
+Threshold: 0.20
+Accepted as in-scope: True
+
+Query: What is the capital of France?
+Expected scope: out_of_scope
+Top-1 cosine distance: 0.8732
+Top-1 cosine similarity: 0.1268
+Retrieved source: international_shipping_policy.txt
+Threshold: 0.20
+Accepted as in-scope: False
+
+Query: How can I train my pet dog?
+Expected scope: out_of_scope
+Top-1 cosine distance: 0.9159
+Top-1 cosine similarity: 0.0841
+Retrieved source: refund_policy.txt
+Threshold: 0.20
+Accepted as in-scope: False

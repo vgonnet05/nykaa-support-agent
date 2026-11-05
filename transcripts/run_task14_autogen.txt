@@ -1,0 +1,108 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python review_stage.py
+exit_code=0
+
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3921.76it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Using an approximate input token count for model 'nykaa-deterministic-mock': assuming one token per four characters because a native token count is unavailable.
+Embedding dimension: 384
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.4003
+
+Result 2:
+Policy: ible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify 
+Source: return_policy.txt
+Distance: 0.6470
+
+Result 3:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.6474
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.4003
+
+Result 2:
+Policy: ible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify 
+Source: return_policy.txt
+Distance: 0.6470
+
+Result 3:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.6474
+
+Result 1:
+Policy: Nykaa Cancellation Policy — Project Assumptions
+
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need
+Source: cancellation_policy.txt
+Distance: 0.4085
+
+Result 2:
+Policy: order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti
+Source: cancellation_policy.txt
+Distance: 0.4780
+
+Result 3:
+Policy: ed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.
+
+Source: escalation_policy.txt
+Distance: 0.6071
+
+Result 1:
+Policy: Nykaa Cancellation Policy — Project Assumptions
+
+Customers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need
+Source: cancellation_policy.txt
+Distance: 0.4085
+
+Result 2:
+Policy: order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti
+Source: cancellation_policy.txt
+Distance: 0.4780
+
+Result 3:
+Policy: ed and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.
+
+Source: escalation_policy.txt
+Distance: 0.6071
+AutoGen status: PASS
+Actual CrewAI draft used: True
+Clean draft approved unchanged: True
+Hallucination draft approved: False
+Transcript: transcripts/task14_autogen_review.txt

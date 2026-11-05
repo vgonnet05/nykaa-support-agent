@@ -1,0 +1,11 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_cache.py
+exit_code=0
+
+PASS: Normalized repeated query uses cache
+Cache statistics: {'cache_entries': 1, 'cache_hits': 1, 'cache_misses': 1}
+Retrieval calls: 1
+PASS: Different collections use separate cache entries
+Cache statistics: {'cache_entries': 2, 'cache_hits': 0, 'cache_misses': 2}
+Retrieval calls: 2
+
+All cache tests passed!

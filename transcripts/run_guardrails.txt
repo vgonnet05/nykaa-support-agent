@@ -1,0 +1,44 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_guardrails.py
+exit_code=0
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+PASS: Phone and payment-card masking
+PASS: Prompt-injection blocking
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3769.42it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+Result 1:
+Policy: tions. For this project, international delivery is treated as unavailable unless the destination is explicitly listed as supported in the configured policy. Customers should confirm destination eligib
+Source: international_shipping_policy.txt
+Distance: 0.8732
+
+Result 2:
+Policy: erviceable areas, starting after dispatch. Timelines may vary with product availability, destination, and courier operations, so the order's tracking information should be checked. If delivery is more
+Source: delivery_policy.txt
+Distance: 0.9052
+
+Result 3:
+Policy: licies.
+
+Source: refund_policy.txt
+Distance: 0.9083
+PASS: Out-of-scope groundedness fallback
+
+All guardrail tests passed.

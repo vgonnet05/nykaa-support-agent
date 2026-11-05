@@ -1,0 +1,22 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_api_contract.py
+exit_code=0
+
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/api.py:26: LangChainDeprecationWarning: RunnableWithMessageHistory is deprecated. Use LangGraph's built-in persistence instead.
+  from conversation_memory import get_session_history # Import session memory functions
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+PASS: Oversized request returns schema-valid token rejection
+PASS: Per-request cost cap rejection
+PASS: Prompt injection returns schema-valid blocked response
+PASS: /add-document success, duplicate, extension, traversal and empty-content checks

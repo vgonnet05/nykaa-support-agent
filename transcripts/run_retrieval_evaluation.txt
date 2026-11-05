@@ -1,0 +1,70 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python evaluate_retrieval.py
+exit_code=0
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3899.85it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+============================================================
+Query: How can I get my money back?
+Expected sources: ['refund_policy.txt']
+Sentence-based: Precision=0.33, Recall=1.0
+Fixed-size: Precision=0.50, Recall=1.0
+Sentence-based results: ['refund_policy.txt', 'return_policy.txt', 'payment_policy.txt']
+Fixed-size results: ['refund_policy.txt', 'payment_policy.txt']
+
+============================================================
+Query: Which countries can Nykaa ship orders to internationally?
+Expected sources: ['international_shipping_policy.txt']
+Sentence-based: Precision=0.33, Recall=1.0
+Fixed-size: Precision=0.50, Recall=1.0
+Sentence-based results: ['international_shipping_policy.txt', 'delivery_policy.txt', 'exchange_policy.txt']
+Fixed-size results: ['international_shipping_policy.txt', 'reverse_pickup_policy.txt']
+
+============================================================
+Query: Can I return a damaged product?
+Expected sources: ['damaged_product_policy.txt']
+Sentence-based: Precision=0.33, Recall=1.0
+Fixed-size: Precision=0.33, Recall=1.0
+Sentence-based results: ['damaged_product_policy.txt', 'return_policy.txt', 'exchange_policy.txt']
+Fixed-size results: ['damaged_product_policy.txt', 'return_policy.txt', 'exchange_policy.txt']
+
+============================================================
+Query: What is the cancellation policy?
+Expected sources: ['cancellation_policy.txt']
+Sentence-based: Precision=0.33, Recall=1.0
+Fixed-size: Precision=0.50, Recall=1.0
+Sentence-based results: ['cancellation_policy.txt', 'reverse_pickup_policy.txt', 'payment_policy.txt']
+Fixed-size results: ['cancellation_policy.txt', 'escalation_policy.txt']
+
+============================================================
+Query: How long does delivery take?
+Expected sources: ['delivery_policy.txt']
+Sentence-based: Precision=0.33, Recall=1.0
+Fixed-size: Precision=1.00, Recall=1.0
+Sentence-based results: ['delivery_policy.txt', 'return_policy.txt', 'refund_policy.txt']
+Fixed-size results: ['delivery_policy.txt']
+
+============================================================
+Query: What is the capital of France?
+Expected sources: []
+Sentence-based: Precision=0.00, Recall=None
+Fixed-size: Precision=0.00, Recall=None
+Sentence-based results: ['delivery_policy.txt', 'return_policy.txt', 'refund_policy.txt']
+Fixed-size results: ['international_shipping_policy.txt', 'delivery_policy.txt', 'refund_policy.txt']
+
+============================================================
+Query: How can I train my pet dog?
+Expected sources: []
+Sentence-based: Precision=0.00, Recall=None
+Fixed-size: Precision=0.00, Recall=None
+Sentence-based results: ['payment_policy.txt', 'escalation_policy.txt', 'loyalty_points_policy.txt']
+Fixed-size results: ['refund_policy.txt', 'reverse_pickup_policy.txt', 'international_shipping_policy.txt']
+
+--- Average metrics (in-scope queries only) ---
+Sentence-based: Average precision=0.33, Average recall=1.00
+Fixed-size: Average precision=0.57, Average recall=1.00

@@ -1,26 +1,53 @@
 {
-  "task": "Task 7 - CrewAI Integration",
-  "status": "PASS",
-  "llm": "Deterministic MockLLM",
-  "execution": "crew.kickoff_async()",
+  "task": "Task 7 - CrewAI integration",
+  "mode": "MOCK_LLM",
+  "external_llm_api_keys_required": false,
+  "agents": [
+    "Retrieval Agent",
+    "Lookup Agent",
+    "Response Composer"
+  ],
+  "tool_permissions": {
+    "Retrieval Agent": [
+      "rag_policy_search"
+    ],
+    "Lookup Agent": [
+      "check_order_status"
+    ],
+    "Response Composer": []
+  },
+  "least_autonomy_assertion": "PASS",
   "tool_calls": [
     {
       "tool": "rag_policy_search",
-      "input": "What is the refund policy?"
+      "input": "What is the cancellation policy?"
     },
     {
       "tool": "check_order_status",
-      "input": "ORD1001"
+      "input": "ORD1002"
     }
   ],
   "tool_results": {
-    "rag_policy_search": "Based on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\nfficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider",
+    "rag_policy_search": "Based on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n",
+    "rag_sources": [
+      "cancellation_policy.txt",
+      "escalation_policy.txt"
+    ],
     "check_order_status": {
-      "record_id": "ORD1001",
+      "record_id": "ORD1002",
       "status": "Shipped",
-      "order_value_inr": 3763,
-      "escalation_score": 0.36
+      "order_value_inr": 538,
+      "escalation_score": 0.21
     }
   },
-  "final_response": "Refund policy evidence:\nBased on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\nfficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider\n\nOrder details:\n{\n  \"record_id\": \"ORD1001\",\n  \"status\": \"Shipped\",\n  \"order_value_inr\": 3763,\n  \"escalation_score\": 0.36\n}"
+  "structured_response": {
+    "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n\n\nOrder lookup:\n{\"record_id\": \"ORD1002\", \"status\": \"Shipped\", \"order_value_inr\": 538, \"escalation_score\": 0.21}",
+    "source_documents": [
+      "cancellation_policy.txt",
+      "escalation_policy.txt"
+    ],
+    "requires_escalation": false
+  },
+  "final_response": "{\n  \"answer\": \"Policy evidence:\\nBased on the available policy information:\\nNykaa Cancellation Policy — Project Assumptions\\n\\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\\n\\n\\nOrder lookup:\\n{\\\"record_id\\\": \\\"ORD1002\\\", \\\"status\\\": \\\"Shipped\\\", \\\"order_value_inr\\\": 538, \\\"escalation_score\\\": 0.21}\",\n  \"source_documents\": [\n    \"cancellation_policy.txt\",\n    \"escalation_policy.txt\"\n  ],\n  \"requires_escalation\": false\n}",
+  "status": "PASS"
 }

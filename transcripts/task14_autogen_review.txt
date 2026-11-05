@@ -1,0 +1,156 @@
+TASK 14 — AUTOGEN REVIEW OF THE ACTUAL CREWAI DRAFT
+Mode: deterministic MOCK_LLM; no external LLM API key.
+
+CLEAN CASE — REFUND QUERY
+Customer query: How long does an approved refund take?
+Retrieved context passed to AutoGen:
+{
+  "rag_policy_search": "Based on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app",
+  "rag_sources": [
+    "refund_policy.txt",
+    "return_policy.txt"
+  ],
+  "check_order_status": {
+    "record_id": "ORD1001",
+    "status": "Shipped",
+    "order_value_inr": 3763,
+    "escalation_score": 0.36
+  }
+}
+Actual CrewAI Composer draft:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\n\nOrder lookup:\n{\"record_id\": \"ORD1001\", \"status\": \"Shipped\", \"order_value_inr\": 3763, \"escalation_score\": 0.36}",
+  "source_documents": [
+    "refund_policy.txt",
+    "return_policy.txt"
+  ],
+  "requires_escalation": false
+}
+CLEAN DRAFT — EXPECTED APPROVAL UNCHANGED
+Submitted draft:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\n\nOrder lookup:\n{\"record_id\": \"ORD1001\", \"status\": \"Shipped\", \"order_value_inr\": 3763, \"escalation_score\": 0.36}",
+  "source_documents": [
+    "refund_policy.txt",
+    "return_policy.txt"
+  ],
+  "requires_escalation": false
+}
+
+REVISION CASE — CANCELLATION QUERY
+Customer query: What is the cancellation policy?
+Retrieved context passed to AutoGen:
+{
+  "rag_policy_search": "Based on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n",
+  "rag_sources": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "check_order_status": {
+    "record_id": "ORD1002",
+    "status": "Shipped",
+    "order_value_inr": 538,
+    "escalation_score": 0.21
+  }
+}
+Actual CrewAI Composer draft:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n\n\nOrder lookup:\n{\"record_id\": \"ORD1002\", \"status\": \"Shipped\", \"order_value_inr\": 538, \"escalation_score\": 0.21}",
+  "source_documents": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "requires_escalation": false
+}
+[user]
+Scenario: clean
+Customer query: How long does an approved refund take?
+Original retrieved context from the CrewAI tools:
+{
+  "rag_policy_search": "Based on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app",
+  "rag_sources": [
+    "refund_policy.txt",
+    "return_policy.txt"
+  ],
+  "check_order_status": {
+    "record_id": "ORD1001",
+    "status": "Shipped",
+    "order_value_inr": 3763,
+    "escalation_score": 0.36
+  }
+}
+
+Actual CrewAI Composer draft under review:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\n\nOrder lookup:\n{\"record_id\": \"ORD1001\", \"status\": \"Shipped\", \"order_value_inr\": 3763, \"escalation_score\": 0.36}",
+  "source_documents": [
+    "refund_policy.txt",
+    "return_policy.txt"
+  ],
+  "requires_escalation": false
+}
+[PolicyComplianceReviewer]
+REVIEW: The Composer draft is consistent with the retrieved policy and order context. Recommend approval without changes.
+[FinalEditor]
+approved=True final_answer='{\n  "answer": "Policy evidence:\\nBased on the available policy information:\\nNykaa Refund Policy — Project Assumptions\\n\\nFor this project, approved refunds are assumed to reach the customer\'s account within 5–7 business days, depending on the payment provider and method. For ca\\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \\n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\\n\\nOrder lookup:\\n{\\"record_id\\": \\"ORD1001\\", \\"status\\": \\"Shipped\\", \\"order_value_inr\\": 3763, \\"escalation_score\\": 0.36}",\n  "source_documents": [\n    "refund_policy.txt",\n    "return_policy.txt"\n  ],\n  "requires_escalation": false\n}' reason='The actual CrewAI Composer draft is supported by the retrieved context and is approved unchanged.'
+Structured verdict:
+{
+  "approved": true,
+  "final_answer": "{\n  \"answer\": \"Policy evidence:\\nBased on the available policy information:\\nNykaa Refund Policy — Project Assumptions\\n\\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\\nible Electronics products may be returned within 7 days subject to product-specific conditions. Beauty products are not eligible for change-of-mind returns, but damaged or defective items may qualify \\n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\\n\\nOrder lookup:\\n{\\\"record_id\\\": \\\"ORD1001\\\", \\\"status\\\": \\\"Shipped\\\", \\\"order_value_inr\\\": 3763, \\\"escalation_score\\\": 0.36}\",\n  \"source_documents\": [\n    \"refund_policy.txt\",\n    \"return_policy.txt\"\n  ],\n  \"requires_escalation\": false\n}",
+  "reason": "The actual CrewAI Composer draft is supported by the retrieved context and is approved unchanged."
+}
+
+PLANTED HALLUCINATION — EXPECTED REVISION
+Submitted draft:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n\n\nOrder lookup:\n{\"record_id\": \"ORD1002\", \"status\": \"Shipped\", \"order_value_inr\": 538, \"escalation_score\": 0.21}",
+  "source_documents": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "requires_escalation": false
+}
+
+Unsupported test claim: Every Nykaa product can be returned within 30 days, with no exceptions.
+[user]
+Scenario: hallucination
+Customer query: What is the cancellation policy?
+Original retrieved context from the CrewAI tools:
+{
+  "rag_policy_search": "Based on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n",
+  "rag_sources": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "check_order_status": {
+    "record_id": "ORD1002",
+    "status": "Shipped",
+    "order_value_inr": 538,
+    "escalation_score": 0.21
+  }
+}
+
+Actual CrewAI Composer draft under review:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n\n\nOrder lookup:\n{\"record_id\": \"ORD1002\", \"status\": \"Shipped\", \"order_value_inr\": 538, \"escalation_score\": 0.21}",
+  "source_documents": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "requires_escalation": false
+}
+
+Unsupported test claim: Every Nykaa product can be returned within 30 days, with no exceptions.
+[PolicyComplianceReviewer]
+REVIEW: The draft contains an unsupported universal 30-day return promise. The supplied context does not support that claim. Recommend revision.
+[FinalEditor]
+approved=False final_answer='{\n  "answer": "Policy evidence:\\nBased on the available policy information:\\nNykaa Cancellation Policy — Project Assumptions\\n\\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\\n\\n\\nOrder lookup:\\n{\\"record_id\\": \\"ORD1002\\", \\"status\\": \\"Shipped\\", \\"order_value_inr\\": 538, \\"escalation_score\\": 0.21}",\n  "source_documents": [\n    "cancellation_policy.txt",\n    "escalation_policy.txt"\n  ],\n  "requires_escalation": false\n}' reason='The deliberately injected 30-day promise was unsupported; the final answer restores the original CrewAI draft.'
+Structured verdict:
+{
+  "approved": false,
+  "final_answer": "{\n  \"answer\": \"Policy evidence:\\nBased on the available policy information:\\nNykaa Cancellation Policy — Project Assumptions\\n\\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\\n\\n\\nOrder lookup:\\n{\\\"record_id\\\": \\\"ORD1002\\\", \\\"status\\\": \\\"Shipped\\\", \\\"order_value_inr\\\": 538, \\\"escalation_score\\\": 0.21}\",\n  \"source_documents\": [\n    \"cancellation_policy.txt\",\n    \"escalation_policy.txt\"\n  ],\n  \"requires_escalation\": false\n}",
+  "reason": "The deliberately injected 30-day promise was unsupported; the final answer restores the original CrewAI draft."
+}
+
+PASS: actual CrewAI draft approved unchanged in scenario 1.
+PASS: unsupported 30-day promise removed in scenario 2.

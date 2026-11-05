@@ -1,0 +1,69 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_websocket.py
+exit_code=0
+
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/api.py:26: LangChainDeprecationWarning: RunnableWithMessageHistory is deprecated. Use LangGraph's built-in persistence instead.
+  from conversation_memory import get_session_history # Import session memory functions
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/conversation_memory.py:35: LangChainDeprecationWarning: The class `InMemoryChatMessageHistory` was deprecated in LangChain 1.6.4 and will be removed in 2.0.0 See the short-term memory documentation for recommended alternatives: https://docs.langchain.com/oss/python/langchain/short-term-memory
+  store[session_id] = InMemoryChatMessageHistory()
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3867.45it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+Result 1:
+Policy: Nykaa Return Policy — Project Assumptions
+
+For this project, eligible Apparel, Footwear, and Home products may be returned within 7 days of delivery, while eligible Electronics products may be returne
+Source: return_policy.txt
+Distance: 0.4116
+
+Result 2:
+Policy: Nykaa Reverse-Pickup Policy — Project Assumptions
+
+Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. Pickup availability must be confir
+Source: reverse_pickup_policy.txt
+Distance: 0.4668
+
+Result 3:
+Policy:  damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. These timelines and conditions a
+Source: return_policy.txt
+Distance: 0.4820
+Reply 1: {'type': 'policy', 'risk': 'low', 'result': 'Based on the available policy information:\nNykaa Return Policy — Project Assumptions\n\nFor this project, eligible Apparel, Footwear, and Home products may be returned within 7 days of delivery, while eligible Electronics products may be returne\nNykaa Reverse-Pickup Policy — Project Assumptions\n\nEligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. Pickup availability must be confir\n damaged or defective items may qualify for a claim. Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. These timelines and conditions a'}
+
+Result 1:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.4369
+
+Result 2:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.4512
+
+Result 3:
+Policy: fficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider
+Source: payment_policy.txt
+Distance: 0.5689
+Reply 2: {'type': 'policy', 'risk': 'medium', 'result': "Based on the available policy information:\nNykaa Refund Policy — Project Assumptions\n\nFor this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca\n the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app\nfficient funds, or technical issues. Customers should verify the transaction status before retrying to reduce the risk of duplicate payments. A retry should be attempted only when the payment provider"}
+Reply 3: {'type': 'escalation', 'risk': 'high', 'result': 'Your request requires additional review by our customer support team. Please contact customer support.'}
+PASS: WebSocket high-risk escalation
+WebSocket client disconnected
+WebSocket disconnected cleanly
