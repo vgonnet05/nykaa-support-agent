@@ -52,9 +52,11 @@ results. Similarity is calculated as 1 minus cosine distance. If the
 top result falls below this threshold, the system returns:
 "I don't know based on the available policy information."
 
-Testing covered five in-scope queries and two out-of-scope queries.
-All five in-scope queries were accepted, and both out-of-scope queries
-triggered the fallback response.
+Testing covered five in-scope queries and two out-of-scope queries. The
+reproducible script evaluate_grounded_answers.py checks the same five in-scope
+queries later used by Task 5, plus both out-of-scope fallback cases. All five
+in-scope queries were accepted, and both out-of-scope queries triggered the
+fallback response.
 
 | Query | Top similarity | Expected scope | Result |
 |---|---:|---|---|
@@ -73,8 +75,8 @@ relevance.
 
 ## Task 5: Retrieval Evaluation
 
-Both chunking strategies were evaluated using five in-scope
-queries and two out-of-scope queries. Evaluation uses document-level
+Both chunking strategies were evaluated using the same five in-scope
+queries as Task 4, plus two out-of-scope queries. Evaluation uses document-level
 precision and recall, with the expected source document specified for
 each in-scope query.
 
@@ -106,11 +108,11 @@ The expected source document for each query was one policy file.
 
 | Query | Sentence Precision | Fixed-Size Precision | Recall (Both) |
 |---|---:|---:|---:|
-| COD refund timeline | 1/3 = 0.33 | 1/2 = 0.50 | 1.00 |
+| Money-back / refund policy | 1/3 = 0.33 | 1/2 = 0.50 | 1.00 |
 | International shipping | 1/3 = 0.33 | 1/2 = 0.50 | 1.00 |
 | Damaged product return | 1/3 = 0.33 | 1/3 = 0.33 | 1.00 |
 | Delivery time | 1/2 = 0.50 | 1/2 = 0.50 | 1.00 |
-| Footwear size exchange | 1/3 = 0.33 | 1/2 = 0.50 | 1.00 |
+| Cancellation policy | 1/3 = 0.33 | 1/2 = 0.50 | 1.00 |
 
 ### Chunking Strategy Recommendation
 
