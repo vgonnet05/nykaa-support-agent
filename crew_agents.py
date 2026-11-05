@@ -17,7 +17,8 @@ from crewai.tools import tool
 from grounded_generation import generate_grounded_answer
 from mock_config import require_mock_llm
 from order_lookup import check_order_status
-from vector_store import build_collections, fixed_collection
+from response_schema import SupportResponse
+from vector_store import build_collections, fixed_collection, search_policy
 
 require_mock_llm()
 
@@ -29,7 +30,14 @@ TOOL_RESULTS: dict[str, object] = {}
 def rag_policy_search(query: str) -> str:
     """Retrieve policy evidence from the local ChromaDB knowledge base."""
     result = generate_grounded_answer(query, fixed_collection)
+    retrieved = search_policy(query, fixed_collection, k=3)
+    sources = list(dict.fromkeys(
+        item["source"]
+        for item in retrieved["metadatas"][0]
+        if item and "source" in item
+    ))
     TOOL_RESULTS["rag_policy_search"] = result
+    TOOL_RESULTS["rag_sources"] = sources
     ACTUAL_TOOL_CALLS.append({"tool": "rag_policy_search", "input": query})
     return result
 
@@ -68,15 +76,20 @@ class DeterministicCrewMockLLM(BaseLLM):
         if "Composer" in role:
             rag = TOOL_RESULTS.get("rag_policy_search", "")
             order = TOOL_RESULTS.get("check_order_status", {})
+            sources = TOOL_RESULTS.get("rag_sources", [])
             if not rag or not order:
                 return "Final Answer: ERROR — required specialist tool results are missing."
-            return (
-                "Final Answer:\n"
-                "Policy evidence:\n"
-                f"{rag}\n\n"
-                "Order lookup:\n"
-                f"{json.dumps(order, ensure_ascii=False)}"
-            )
+            structured = {
+                "answer": (
+                    "Policy evidence:\n"
+                    f"{rag}\n\n"
+                    "Order lookup:\n"
+                    f"{json.dumps(order, ensure_ascii=False)}"
+                ),
+                "source_documents": sources,
+                "requires_escalation": False,
+            }
+            return json.dumps(structured, ensure_ascii=False)
 
         if "Retrieval" in role and call_number == 0:
             match = re.search(r"Customer question:\s*(.+)", task_description)
@@ -99,18 +112,20 @@ class DeterministicCrewMockLLM(BaseLLM):
         return "Final Answer: The requested tool operation completed."
 
 
-async def run_crew_demo(
+def get_tool_permissions(agents: dict[str, Agent]) -> dict[str, list[str]]:
+    """Return each agent's actual attached tools for least-autonomy verification."""
+    return {
+        role: sorted(getattr(tool_item, "name", str(tool_item)) for tool_item in agent.tools)
+        for role, agent in agents.items()
+    }
+
+
+def build_crew(
+    llm: DeterministicCrewMockLLM,
     customer_question: str = "What is the refund policy?",
     order_id: str = "ORD1001",
-) -> dict:
-    """Run the Retrieval, Lookup and Composer agents and persist execution evidence."""
-    ACTUAL_TOOL_CALLS.clear()
-    TOOL_RESULTS.clear()
-    llm = DeterministicCrewMockLLM()
-
-    if fixed_collection.count() == 0:
-        build_collections()
-
+):
+    """Build the three agents and tasks; only Lookup Agent receives the order tool."""
     retrieval_agent = Agent(
         role="Retrieval Agent",
         goal="Retrieve relevant policy evidence using the RAG tool.",
@@ -160,11 +175,16 @@ async def run_crew_demo(
     composer_task = Task(
         description=(
             "Summarize the actual policy and order results from the prior tasks. "
-            "Do not add facts that are absent from those results."
+            "Return JSON with answer, source_documents, and requires_escalation. "
+            "Do not add facts absent from the task results."
         ),
-        expected_output="A concise response containing both specialist results.",
+        expected_output=(
+            "A valid SupportResponse JSON object with answer (string), "
+            "source_documents (array of filenames), and requires_escalation (boolean)."
+        ),
         agent=composer_agent,
         context=[retrieval_task, lookup_task],
+        output_pydantic=SupportResponse,
     )
 
     crew = Crew(
@@ -173,7 +193,44 @@ async def run_crew_demo(
         process=Process.sequential,
         verbose=False,
     )
+    agents = {
+        "Retrieval Agent": retrieval_agent,
+        "Lookup Agent": lookup_agent,
+        "Response Composer": composer_agent,
+    }
+    return crew, agents
+
+
+async def run_crew_demo(
+    customer_question: str = "What is the refund policy?",
+    order_id: str = "ORD1001",
+) -> dict:
+    """Run the crew, validate its structured response and persist execution evidence."""
+    ACTUAL_TOOL_CALLS.clear()
+    TOOL_RESULTS.clear()
+    llm = DeterministicCrewMockLLM()
+
+    if fixed_collection.count() == 0:
+        build_collections()
+
+    crew, agents = build_crew(llm, customer_question, order_id)
+    permissions = get_tool_permissions(agents)
+
+    # Least autonomy: only Lookup Agent may invoke check_order_status.
+    assert "check_order_status" in permissions["Lookup Agent"]
+    assert "check_order_status" not in permissions["Retrieval Agent"]
+    assert "check_order_status" not in permissions["Response Composer"]
+    assert "rag_policy_search" in permissions["Retrieval Agent"]
+    assert "rag_policy_search" not in permissions["Lookup Agent"]
+
     result = await crew.kickoff_async()
+
+    structured_response = getattr(result, "pydantic", None)
+    if structured_response is None:
+        raw_output = getattr(result, "raw", str(result))
+        structured_response = SupportResponse.model_validate_json(raw_output)
+    elif not isinstance(structured_response, SupportResponse):
+        structured_response = SupportResponse.model_validate(structured_response)
 
     called_tools = {entry["tool"] for entry in ACTUAL_TOOL_CALLS}
     assert {"rag_policy_search", "check_order_status"}.issubset(called_tools), (
@@ -181,15 +238,20 @@ async def run_crew_demo(
     )
     assert "rag_policy_search" in TOOL_RESULTS
     assert "check_order_status" in TOOL_RESULTS
+    assert structured_response.answer
+    assert structured_response.source_documents
 
     evidence = {
         "task": "Task 7 - CrewAI integration",
         "mode": "MOCK_LLM",
         "external_llm_api_keys_required": False,
-        "agents": ["Retrieval Agent", "Lookup Agent", "Response Composer"],
+        "agents": list(agents),
+        "tool_permissions": permissions,
+        "least_autonomy_assertion": "PASS",
         "tool_calls": ACTUAL_TOOL_CALLS,
         "tool_results": TOOL_RESULTS,
-        "final_response": str(result),
+        "structured_response": structured_response.model_dump(),
+        "final_response": structured_response.model_dump_json(indent=2),
         "status": "PASS",
     }
     transcript_dir = Path("transcripts")
@@ -198,10 +260,16 @@ async def run_crew_demo(
         "TASK 7 — CREWAI EXECUTION TRANSCRIPT\n"
         "Mode: deterministic MOCK_LLM; no external LLM API key.\n"
         f"Agents: {', '.join(evidence['agents'])}\n\n"
-        "Actual tool invocations and results:\n"
+        "Actual tool permissions:\n"
+        f"{json.dumps(permissions, indent=2)}\n\n"
+        "Least-autonomy assertions: PASS\n"
+        "Only Lookup Agent has check_order_status; Retrieval and Composer do not.\n\n"
+        "Actual tool invocations:\n"
         f"{json.dumps(ACTUAL_TOOL_CALLS, indent=2, ensure_ascii=False)}\n\n"
         f"Tool results:\n{json.dumps(TOOL_RESULTS, indent=2, ensure_ascii=False)}\n\n"
-        f"Final Crew output:\n{result}\n\nPASS: both real tools were invoked.\n",
+        "Validated Pydantic SupportResponse:\n"
+        f"{structured_response.model_dump_json(indent=2)}\n\n"
+        "PASS: both tools ran and the final response passed Pydantic validation.\n",
         encoding="utf-8",
     )
     Path("task7_tool_evidence.json").write_text(
@@ -215,7 +283,9 @@ def main() -> None:
     evidence = asyncio.run(run_crew_demo())
     print("CrewAI status:", evidence["status"])
     print("Agents:", ", ".join(evidence["agents"]))
+    print("Tool permissions:", json.dumps(evidence["tool_permissions"]))
     print("Tool calls:", json.dumps(evidence["tool_calls"], ensure_ascii=False))
+    print("Structured response validated:", bool(evidence["structured_response"]))
     print("Transcript: transcripts/task7_crewai.txt")
     print("Evidence: task7_tool_evidence.json")
 
