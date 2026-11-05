@@ -20,6 +20,7 @@ COMMANDS = [
     ("conversation_memory", ["test_conversation_memory.py"]),
     ("response_schema", ["test_response_schema.py"]),
     ("governance", ["test_governance.py"]),
+    ("least_autonomy", ["test_least_autonomy.py"]),
     ("runtime_resilience", ["test_resilience.py"]),
     ("answer_cache", ["test_cache.py"]),
     ("api_contract", ["test_api_contract.py"]),
