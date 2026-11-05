@@ -222,7 +222,7 @@ async def review_scenario(
 
 async def run_review_demo() -> dict:
     # Use the actual output of Task 7, not a separately invented sample draft.
-    crew_evidence = run_crew_demo()
+    crew_evidence = await asyncio.to_thread(run_crew_demo)
     crew_draft = crew_evidence["final_response"]
     retrieved_context = json.dumps(
         crew_evidence["tool_results"],
