@@ -134,9 +134,9 @@ The CrewAI workflow defines three agent roles:
 - **Lookup agent:** handles order lookups.
 - **Composer agent:** prepares the response.
 
-The workflow uses CrewAI's kickoff mechanism. Supporting notebook and evidence files are included in the repository.
+The reproducible implementation is in crew_agents.py. It defines the Retrieval, Lookup and Response Composer agents, invokes the actual local RAG and order-lookup tools, and writes task7_tool_evidence.json plus transcripts/task7_crewai.txt.
 
-The deterministic mock setup demonstrates orchestration, not production LLM response quality. It does not require a paid LLM API key. Before running the CrewAI notebook, disable telemetry by setting `CREWAI_DISABLE_TELEMETRY=true` or `OTEL_SDK_DISABLED=true` in the runtime environment.
+Run it with python crew_agents.py after building the knowledge base and vector collections. The agent uses a deterministic CrewAI BaseLLM implementation; it does not call an external LLM provider. Set MOCK_LLM=true, CREWAI_DISABLE_TELEMETRY=true and OTEL_SDK_DISABLED=true.
 
 ## Task 8: Conversation Memory
 
@@ -201,9 +201,9 @@ Treat these scores as regression checks for the current synthetic dataset, not i
 
 ## Task 14: AutoGen Review
 
-The notebook includes an AutoGen review exercise using structured Pydantic verdicts and deterministic mock scenarios.
+The reproducible implementation is in review_stage.py. It uses a two-agent AutoGen RoundRobinGroupChat with a Pydantic Verdict schema and deterministic mock model clients. Run python review_stage.py to demonstrate approval of a grounded draft and rejection/revision of a planted unsupported claim. The run writes transcripts/task14_autogen_review.txt.
 
-This demonstrates orchestration and structured review for the tested scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
+This demonstrates AutoGen orchestration and structured verdict handling for the defined test scenarios. It does not prove that a real LLM reviewer will reliably detect all hallucinations or unsafe responses.
 
 ## Task 15: Runtime Limits and Risk Classification
 
@@ -234,6 +234,18 @@ The risk classifier assigns low, medium, or high risk using a limited keyword li
 Both cache tests passed. The cache uses an in-memory dictionary and is not persistent across process restarts.
 
 ## Setup and Installation
+
+The project is designed to run in deterministic MOCK_LLM mode without any external LLM-provider API keys. The support workflow uses local Sentence Transformers embeddings and ChromaDB; CrewAI and AutoGen use local deterministic mock clients.
+
+Set the following environment variables before running the demonstrations:
+
+~~~bash
+export MOCK_LLM=true
+export CREWAI_DISABLE_TELEMETRY=true
+export OTEL_SDK_DISABLED=true
+~~~
+
+The first setup may download the all-MiniLM-L6-v2 embedding model from Hugging Face. This is a local embedding model, not an LLM API call, and may require internet access on first use.
 
 Install dependencies:
 
@@ -273,14 +285,32 @@ python evaluate_quality.py
 
 ## Run Test Scripts
 
-```bash
+Run the complete submission check from the repository root:
+
+~~~bash
+python run_submission_checks.py
+~~~
+
+The runner sets MOCK_LLM=true, disables CrewAI telemetry, removes common LLM-provider API-key variables from child processes, executes the demonstration and regression scripts, and saves command output under transcripts/. It exits non-zero if any command fails.
+
+The individual checks can also be run separately:
+
+~~~bash
 python test_guardrails.py
 python test_conversation_memory.py
+python test_response_schema.py
+python test_governance.py
+python test_resilience.py
+python test_cache.py
+python test_api_contract.py
+python test_structured_logging.py
 python test_websocket.py
 python test_websocket_disconnect.py
-```
+python crew_agents.py
+python review_stage.py
+~~~
 
-Verify each script's result before reporting it as passing. A pytest run that discovers zero tests does not demonstrate a passing test suite.
+After a successful run, inspect and commit the generated files under transcripts/. A pytest run that discovers zero tests does not demonstrate a passing test suite.
 
 ## Known Limitations
 
@@ -293,6 +323,8 @@ Verify each script's result before reporting it as passing. A pytest run that di
 7. High-risk requests are routed to a human-review escalation response; classification is based on a limited keyword list.
 8. Token and cost estimates are illustrative, not actual model billing.
 9. Production readiness has not been established through independent evaluation, security review, or real-world testing.
+
+Submission transcripts and evidence are generated under transcripts/ by run_submission_checks.py. See transcripts/README.md for the evidence map.
 
 ## Summary
 
