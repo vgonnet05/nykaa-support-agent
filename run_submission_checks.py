@@ -14,6 +14,7 @@ COMMANDS = [
     ("task1_dataset", ["dataset.py"]),
     ("knowledge_base", ["create_knowledge_base.py"]),
     ("vector_store_build", ["vector_store.py"]),
+    ("grounded_answers", ["evaluate_grounded_answers.py"]),
     ("retrieval_evaluation", ["evaluate_retrieval.py"]),
     ("quality_evaluation", ["evaluate_quality.py"]),
     ("guardrails", ["test_guardrails.py"]),
