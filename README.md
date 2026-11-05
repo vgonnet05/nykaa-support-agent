@@ -29,7 +29,8 @@ eligibility is documented separately in reverse_pickup_policy.txt.
 The numerical timelines and conditions are fictional capstone assumptions,
 not verified official Nykaa policies. The three manually maintained files
 (return_policy.txt, shipping_policy.txt, and reverse_pickup_policy.txt) are
-preserved when create_knowledge_base.py is rerun.
+preserved when create_knowledge_base.py is rerun. The resulting knowledge base
+contains 13 files (12 required topics plus one supplemental shipping document).
 
 ## Task 3: Chunking and Vector Storage
 
@@ -158,7 +159,7 @@ The CrewAI workflow defines three agent roles:
 - **Lookup agent:** handles order lookups.
 - **Composer agent:** prepares the response.
 
-The reproducible implementation is in crew_agents.py. It defines the Retrieval, Lookup and Response Composer agents and invokes the actual local RAG and order-lookup tools through CrewAI kickoff_async(). The Composer task uses output_pydantic=SupportResponse, and the resulting CrewOutput.pydantic value is validated in code.
+The reproducible implementation is in crew_agents.py. It defines the Retrieval, Lookup and Response Composer agents and invokes the actual local RAG and order-lookup tools through CrewAI .kickoff(). The Composer task uses output_pydantic=SupportResponse, and the resulting CrewOutput.pydantic value is validated in code.
 
 Only the Lookup Agent receives check_order_status. Retrieval receives only rag_policy_search, and the Composer receives no tools. Runtime assertions and test_least_autonomy.py verify this least-autonomy restriction. The run writes task7_tool_evidence.json plus transcripts/task7_crewai.txt.
 
@@ -168,7 +169,7 @@ Run python crew_agents.py after building the knowledge base and vector collectio
 
 `conversation_memory.py` demonstrates session-scoped in-memory conversation history.
 
-Tests check that messages remain available within the same session and that separate sessions have isolated histories.
+Tests check that messages remain available within the same session and that separate sessions have isolated histories. run_submission_checks.py saves the existing-session and fresh-session output in transcripts/run_conversation_memory.txt.
 
 **Limitation:** Memory is lost when the process restarts. The WebSocket endpoint stores conversation history, but the current RAG answer-generation workflow does not use that history to contextualize answers.
 
@@ -200,7 +201,7 @@ The CrewAI Composer task declares this model through output_pydantic=SupportResp
 | `POST /add-document` | Add a `.txt` policy document |
 | `WS /ws/chat` | Exchange support messages over WebSocket |
 
-The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections.
+The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections. test_api_contract.py exercises successful document addition and invalid extension, path traversal, empty-content, and duplicate-file responses.
 
 ## Task 12: Structured Logging
 
@@ -220,6 +221,7 @@ Run the evaluation after building the knowledge base:
 
 ```bash
 python create_knowledge_base.py
+python vector_store.py
 python evaluate_quality.py
 ```
 
