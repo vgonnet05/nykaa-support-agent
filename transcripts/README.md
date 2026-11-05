@@ -26,8 +26,10 @@ The embedding model may need to be downloaded from Hugging Face on first run,
 so internet access may be needed for initial setup. No LLM-provider API key is
 required.
 
-Do not treat these instructions as proof of a passing run. Commit the generated
-transcripts and summary only after run_submission_checks.py exits successfully.
+Do not treat these instructions as proof of a passing run. The GitHub Actions
+workflow commits the generated transcripts, Task 7/14 evidence, and Task 13
+quality report to the submission-readiness branch only after every check passes.
+For a local run, inspect the summary and commit the generated files manually.
 The runner records failures and exits non-zero if any step fails.
 
 ## Evidence map
@@ -35,7 +37,7 @@ The runner records failures and exits non-zero if any step fails.
 | Area | Executable evidence |
 |---|---|
 | Dataset generation and validation | dataset.py |
-| Knowledge-base creation and RAG index | create_knowledge_base.py, vector_store.py, 13 committed policy files |
+| Required knowledge-base topics and RAG index | create_knowledge_base.py, vector_store.py, 13 committed policy files |
 | Retrieval and grounded-answer evaluation | evaluate_retrieval.py, evaluate_quality.py |
 | Order lookup | order_lookup.py, CrewAI tool transcript |
 | CrewAI orchestration and least autonomy | crew_agents.py, test_least_autonomy.py, task7_crewai.txt |
@@ -50,5 +52,5 @@ The runner records failures and exits non-zero if any step fails.
 | Resilience and answer cache | test_resilience.py, test_cache.py |
 
 The repository README is the source of truth for task descriptions and known
-limitations. If the course rubric defines additional Tasks 2 or 3 not listed
-there, add their exact acceptance criteria and demonstrations before submission.
+limitations. Task 2 and Task 3 are documented explicitly in the README and
+represented in the evidence map above.
