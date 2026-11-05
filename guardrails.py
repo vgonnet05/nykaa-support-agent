@@ -1,48 +1,28 @@
-# Import Python's regular expression module.
-# We use it to find phone numbers inside customer messages.
 import re
 
 
 def mask_pii(text: str) -> str:
-    """
-    Mask Indian mobile numbers and payment-card last-four digits.
-
-    Examples:
-        9876543210          -> **********
-        +91 9876543210      -> **************
-        card ending in 1234 -> card ending in ****
-    """
-
-    # Match a 10-digit Indian mobile number.
-    # The +91 country code is optional.
-    # The lookarounds prevent matching part of a longer number.
-    pattern = r"(?<!\d)(?:\+91[\s-]?)?[6-9]\d{9}(?!\d)"
-
-    # Replace each detected phone number with asterisks.
-    # Keep the same number of characters as the original match.
+    """Mask supported Indian mobile numbers and explicitly labelled card suffixes."""
+    phone_pattern = r"(?<!\d)(?:\+91[\s-]?)?[6-9]\d{9}(?!\d)"
     masked_text = re.sub(
-        pattern,
+        phone_pattern,
         lambda match: "*" * len(match.group()),
         text,
     )
 
-    # Mask the last four digits when a customer explicitly identifies
-    # them as a payment-card suffix (for example, "card ending 1234").
+    # Match phrases such as "card ending in 1234" and
+    # "credit card: 1234". Do not mask arbitrary four-digit numbers.
     card_suffix_pattern = (
-        r"((?:credit|debit|payment)?\\s*card\\b[^\\d]{0,30})(\\d{4})\\b"
+        r"((?:(?:credit|debit|payment)\s+)?card\b[^\d]{0,30})(\d{4})\b"
     )
-    masked_text = re.sub(
+    return re.sub(
         card_suffix_pattern,
         lambda match: match.group(1) + "****",
         masked_text,
         flags=re.IGNORECASE,
     )
 
-    # Return the message with phone numbers and card suffixes masked.
-    return masked_text
 
-# Define phrases commonly associated with prompt-injection attempts.
-# This is a basic keyword-based guardrail, not a complete detector.
 INJECTION_PATTERNS = [
     r"ignore\s+(all\s+)?previous\s+instructions",
     r"ignore\s+(all\s+)?prior\s+instructions",
@@ -53,35 +33,14 @@ INJECTION_PATTERNS = [
 
 
 def detect_prompt_injection(text: str) -> bool:
-    """
-    Return True when the message matches a known injection pattern.
-    Return False when no pattern matches.
-    """
+    """Detect a limited set of known prompt-injection phrases."""
+    return any(
+        re.search(pattern, text, re.IGNORECASE)
+        for pattern in INJECTION_PATTERNS
+    )
 
-    # Check the message against each known injection pattern.
-    for pattern in INJECTION_PATTERNS:
-
-        # Ignore differences between uppercase and lowercase letters.
-        if re.search(pattern, text, re.IGNORECASE):
-            return True
-
-    # No known injection phrase was detected.
-    return False
 
 def validate_input(text: str) -> tuple[str, bool]:
-    """
-    Mask PII and check for prompt injection.
-
-    Returns:
-        masked_text: The input with phone numbers masked.
-        is_injection: True if a known injection pattern is detected.
-    """
-
-    # Mask personal information before further processing or logging.
+    """Return PII-masked input and whether a known injection phrase was found."""
     masked_text = mask_pii(text)
-
-    # Check the masked message for known prompt-injection patterns.
-    is_injection = detect_prompt_injection(masked_text)
-
-    # Return the safe-to-process text and the detection result.
-    return masked_text, is_injection
+    return masked_text, detect_prompt_injection(masked_text)
