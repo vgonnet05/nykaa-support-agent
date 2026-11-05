@@ -1,9 +1,10 @@
 from pathlib import Path
 
-# Generates the 10 automated policy documents for the Nykaa capstone.
+# Generates 10 automated policy documents for the Nykaa capstone.
 # Numerical timelines below are fictional project assumptions, not
-# verified official Nykaa policies. The two manually maintained files
-# (return_policy.txt and shipping_policy.txt) are intentionally untouched.
+# verified official Nykaa policies. The three manually maintained files
+# (return_policy.txt, shipping_policy.txt and reverse_pickup_policy.txt)
+# are intentionally untouched.
 
 folder = Path("knowledge_base")
 
@@ -55,5 +56,5 @@ for filename, text in documents.items():
     (folder / filename).write_text(text.strip() + "\n", encoding="utf-8")
 
 print(f"Created/updated {len(documents)} knowledge-base documents.")
-print("Manual documents left untouched: return_policy.txt, shipping_policy.txt")
+print("Manual documents left untouched: return_policy.txt, shipping_policy.txt, reverse_pickup_policy.txt")
 print("Reminder: numerical policy values are fictional project assumptions.")
