@@ -157,9 +157,14 @@ def add_document(request: AddDocumentRequest):
 
         # Add fixed-size chunks to the existing collection.
         if fixed_chunks:
-            fixed_embeddings = model.encode(
+            encoded_fixed = model.encode(
                 [chunk["text"] for chunk in fixed_chunks]
-            ).tolist()
+            )
+            fixed_embeddings = (
+                encoded_fixed.tolist()
+                if hasattr(encoded_fixed, "tolist")
+                else encoded_fixed
+            )
 
             fixed_collection.upsert(
                 ids=[chunk["id"] for chunk in fixed_chunks],
@@ -177,9 +182,14 @@ def add_document(request: AddDocumentRequest):
 
         # Add sentence-based chunks to the existing collection.
         if sentence_chunks:
-            sentence_embeddings = model.encode(
+            encoded_sentences = model.encode(
                 [chunk["text"] for chunk in sentence_chunks]
-            ).tolist()
+            )
+            sentence_embeddings = (
+                encoded_sentences.tolist()
+                if hasattr(encoded_sentences, "tolist")
+                else encoded_sentences
+            )
 
             sentence_collection.upsert(
                 ids=[chunk["id"] for chunk in sentence_chunks],
