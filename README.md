@@ -18,19 +18,19 @@ order states and values, and sufficient delayed shipments to test escalation.
 
 ## Task 2: Knowledge Base
 
-The repository contains 13 policy documents: the 12 required policy topics plus
-a supplemental shipping/tracking document. The required topics are return windows
-by category, COD refund timelines, delivery SLAs, reverse-pickup eligibility,
-warranty terms by category, cancellation, loyalty-point redemption, payment
-failure/retry, size exchange, damaged-item claims, international shipping
-restrictions, and the customer-support escalation matrix. Reverse-pickup
-eligibility is documented separately in reverse_pickup_policy.txt.
+The repository contains exactly 12 policy documents covering all 12 required
+topics: return windows by category, COD refund timelines, delivery SLAs,
+reverse-pickup eligibility, warranty terms by category, cancellation,
+loyalty-point redemption, payment failure/retry, size exchange, damaged-item
+claims, international shipping restrictions, and the customer-support
+escalation matrix. Reverse-pickup eligibility is documented separately in
+reverse_pickup_policy.txt.
 
 The numerical timelines and conditions are fictional capstone assumptions,
-not verified official Nykaa policies. The three manually maintained files
-(return_policy.txt, shipping_policy.txt, and reverse_pickup_policy.txt) are
-preserved when create_knowledge_base.py is rerun. The resulting knowledge base
-contains 13 files (12 required topics plus one supplemental shipping document).
+not verified official Nykaa policies. The two manually maintained files
+(return_policy.txt and reverse_pickup_policy.txt) are preserved when
+create_knowledge_base.py is rerun. The other ten policy files are generated
+by create_knowledge_base.py.
 
 ## Task 3: Chunking and Vector Storage
 
