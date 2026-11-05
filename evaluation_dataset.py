@@ -71,9 +71,9 @@ evaluation_cases = [
     },
     {
         "id": 11,
-        "query": "How can I check the latest shipping status?",
-        "expected_answer": "Use your order details to check the latest shipping status. Delivery estimates may vary with location, product availability, and courier service.",
-        "expected_source": "shipping_policy.txt",
+        "query": "When is reverse pickup available for a return?",
+        "expected_answer": "Eligible returns qualify for reverse pickup only when the delivery address is serviceable and pickup is available. Confirm pickup availability before promising a collection date.",
+        "expected_source": "reverse_pickup_policy.txt",
         "in_scope": True,
     },
     {
