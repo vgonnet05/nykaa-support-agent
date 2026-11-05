@@ -18,16 +18,16 @@ def handle_order_query(record_id: str) -> dict:
 
 def handle_support_request(
     question: str,
-    record_id: str | None = None
+    record_id: str | None = None,
 ) -> dict:
     """Validate, limit, classify, and safely route a support request."""
-
     limits = check_runtime_limits(question)
 
     if not limits["allowed"]:
         return {
             "type": "rejected",
-            "reason": limits["reason"],
+            "result": limits["reason"],
+            "risk": None,
         }
 
     masked_question, is_injection = validate_input(question)
@@ -39,12 +39,13 @@ def handle_support_request(
                 "Your request could not be processed because "
                 "it contains an unsafe instruction."
             ),
+            "risk": None,
         }
 
     risk_level = classify_risk(masked_question)
     question_lower = masked_question.lower()
 
-    # Governance: escalate high-risk requests for human review.
+    # High-risk requests are routed to a human-support escalation response.
     if risk_level == "high":
         return {
             "type": "escalation",
@@ -60,27 +61,28 @@ def handle_support_request(
         for word in ("order", "track", "shipment", "status", "delivery")
     ):
         try:
-            result = handle_order_query(record_id)
             return {
                 "type": "order",
                 "risk": risk_level,
-                "result": result,
+                "result": handle_order_query(record_id),
             }
         except Exception:
             return {
                 "type": "order",
                 "risk": risk_level,
                 "result": {
-                    "error": "Order service is temporarily unavailable. Please try again later."
+                    "error": (
+                        "Order service is temporarily unavailable. "
+                        "Please try again later."
+                    )
                 },
             }
 
     try:
-        result = handle_policy_query(masked_question)
         return {
             "type": "policy",
             "risk": risk_level,
-            "result": result,
+            "result": handle_policy_query(masked_question),
         }
     except Exception:
         return {
