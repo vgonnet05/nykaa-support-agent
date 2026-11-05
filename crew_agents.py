@@ -1,7 +1,6 @@
 """Three-agent CrewAI demonstration using deterministic local tools and a mock LLM."""
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 from pathlib import Path
@@ -201,7 +200,7 @@ def build_crew(
     return crew, agents
 
 
-async def run_crew_demo(
+def run_crew_demo(
     customer_question: str = "What is the refund policy?",
     order_id: str = "ORD1001",
 ) -> dict:
@@ -223,7 +222,7 @@ async def run_crew_demo(
     assert "rag_policy_search" in permissions["Retrieval Agent"]
     assert "rag_policy_search" not in permissions["Lookup Agent"]
 
-    result = await crew.kickoff_async()
+    result = crew.kickoff()
 
     structured_response = getattr(result, "pydantic", None)
     if structured_response is None:
@@ -280,7 +279,7 @@ async def run_crew_demo(
 
 
 def main() -> None:
-    evidence = asyncio.run(run_crew_demo())
+    evidence = run_crew_demo()
     print("CrewAI status:", evidence["status"])
     print("Agents:", ", ".join(evidence["agents"]))
     print("Tool permissions:", json.dumps(evidence["tool_permissions"]))
