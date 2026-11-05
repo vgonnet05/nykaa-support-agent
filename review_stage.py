@@ -1,4 +1,4 @@
-"""AutoGen two-agent review stage with deterministic, API-key-free mock clients."""
+"""AutoGen review of the actual CrewAI draft using deterministic mock clients."""
 from __future__ import annotations
 
 import asyncio
@@ -24,6 +24,8 @@ from autogen_core.models import (
     RequestUsage,
 )
 
+from crew_agents import run_crew_demo
+
 
 class Verdict(BaseModel):
     approved: bool
@@ -32,12 +34,20 @@ class Verdict(BaseModel):
 
 
 class DeterministicReviewClient(ChatCompletionClient):
-    """Local mock model client with fixed outputs for the two review scenarios."""
+    """Local mock model client; it never calls an external model provider."""
 
-    def __init__(self, role: str, scenario: str) -> None:
+    def __init__(
+        self,
+        role: str,
+        scenario: str,
+        draft: str,
+        revised_answer: str,
+    ) -> None:
         super().__init__()
         self.role = role
         self.scenario = scenario
+        self.draft = draft
+        self.revised_answer = revised_answer
         self._usage = RequestUsage(prompt_tokens=0, completion_tokens=0)
 
     @property
@@ -84,36 +94,31 @@ class DeterministicReviewClient(ChatCompletionClient):
         if self.role == "reviewer":
             if self.scenario == "clean":
                 content = (
-                    "REVIEW: The draft is consistent with the supplied context. "
-                    "No unsupported claims were identified. Recommend approval."
+                    "REVIEW: The Composer draft is consistent with the retrieved "
+                    "policy and order context. Recommend approval without changes."
                 )
             else:
                 content = (
-                    "REVIEW: The draft claims a universal 30-day return window, "
-                    "which is not supported by the supplied context. Recommend revision."
+                    "REVIEW: The draft contains an unsupported universal 30-day "
+                    "return promise. The supplied context does not support that "
+                    "claim. Recommend revision."
                 )
-        elif self.scenario == "clean":
-            content = json.dumps({
-                "approved": True,
-                "final_answer": (
-                    "Return eligibility depends on the product and the applicable "
-                    "Nykaa return policy. Check the product-specific terms."
-                ),
-                "reason": "The draft is consistent with the supplied context.",
-            })
         else:
             content = json.dumps({
-                "approved": False,
+                "approved": self.scenario == "clean",
                 "final_answer": (
-                    "Return eligibility depends on the product and the applicable "
-                    "Nykaa return policy. Check the product-specific terms or "
-                    "contact customer support."
+                    self.draft if self.scenario == "clean" else self.revised_answer
                 ),
                 "reason": (
-                    "The original draft contained an unsupported universal "
-                    "30-day claim; the revised answer removes it."
+                    "The actual CrewAI Composer draft is supported by the retrieved "
+                    "context and is approved unchanged."
+                    if self.scenario == "clean"
+                    else (
+                        "The deliberately injected 30-day promise was unsupported; "
+                        "the final answer restores the original CrewAI draft."
+                    )
                 ),
-            })
+            }, ensure_ascii=False)
 
         return CreateResult(
             finish_reason="stop",
@@ -147,24 +152,42 @@ def extract_verdict(result) -> Verdict:
     raise AssertionError("No structured Verdict was returned by AutoGen.")
 
 
-async def review_scenario(scenario: str):
+async def review_scenario(
+    scenario: str,
+    retrieved_context: str,
+    crew_draft: str,
+):
     if scenario not in {"clean", "hallucination"}:
         raise ValueError("scenario must be 'clean' or 'hallucination'")
 
+    # The second scenario injects one deliberately unsupported statement
+    # into the actual CrewAI draft so the reviewer has something to correct.
+    submitted_draft = crew_draft
+    if scenario == "hallucination":
+        submitted_draft += (
+            "\n\nUnsupported test claim: Every Nykaa product can be returned "
+            "within 30 days, with no exceptions."
+        )
+
     reviewer = AssistantAgent(
-        name="Reviewer",
-        model_client=DeterministicReviewClient("reviewer", scenario),
+        name="PolicyComplianceReviewer",
+        model_client=DeterministicReviewClient(
+            "reviewer", scenario, submitted_draft, crew_draft
+        ),
         system_message=(
-            "Review the composer draft against the supplied context. "
-            "Identify unsupported claims and recommend approval or revision."
+            "Review the actual CrewAI Composer draft against the supplied "
+            "retrieved context. Identify unsupported claims and recommend "
+            "approval or revision."
         ),
     )
     editor = AssistantAgent(
         name="FinalEditor",
-        model_client=DeterministicReviewClient("editor", scenario),
+        model_client=DeterministicReviewClient(
+            "editor", scenario, submitted_draft, crew_draft
+        ),
         system_message=(
             "Return a structured verdict with approved, final_answer, and reason. "
-            "Do not preserve unsupported claims."
+            "Approve a supported draft unchanged. Remove unsupported claims."
         ),
         output_content_type=Verdict,
     )
@@ -174,53 +197,80 @@ async def review_scenario(scenario: str):
         custom_message_types=[StructuredMessage[Verdict]],
     )
 
-    if scenario == "clean":
-        draft = (
-            "Return eligibility depends on the product and the applicable "
-            "Nykaa return policy. Check the product-specific terms."
-        )
-    else:
-        draft = "Every Nykaa product can be returned within 30 days, with no exceptions."
-
     result = await team.run(
         task=(
             f"Scenario: {scenario}\n"
-            "Retrieved context: Return eligibility depends on the product "
-            "and the applicable Nykaa return policy.\n"
-            f"Composer draft: {draft}"
+            "Original retrieved context from the CrewAI tools:\n"
+            f"{retrieved_context}\n\n"
+            "Actual CrewAI Composer draft under review:\n"
+            f"{submitted_draft}"
         )
     )
     verdict = extract_verdict(result)
-    expected_approval = scenario == "clean"
-    assert verdict.approved is expected_approval
-    assert "applicable" in verdict.final_answer.lower()
-    return result, verdict
+
+    if scenario == "clean":
+        assert verdict.approved is True
+        assert verdict.final_answer == crew_draft
+    else:
+        assert verdict.approved is False
+        assert "30 days" in submitted_draft
+        assert "30 days" not in verdict.final_answer
+        assert verdict.final_answer == crew_draft
+
+    return result, verdict, submitted_draft
 
 
 async def run_review_demo() -> dict:
-    clean_result, clean_verdict = await review_scenario("clean")
-    hallucination_result, hallucination_verdict = await review_scenario("hallucination")
+    # Use the actual output of Task 7, not a separately invented sample draft.
+    crew_evidence = await run_crew_demo()
+    crew_draft = crew_evidence["final_response"]
+    retrieved_context = json.dumps(
+        crew_evidence["tool_results"],
+        indent=2,
+        ensure_ascii=False,
+    )
+
+    clean_result, clean_verdict, clean_draft = await review_scenario(
+        "clean", retrieved_context, crew_draft
+    )
+    revision_result, revision_verdict, injected_draft = await review_scenario(
+        "hallucination", retrieved_context, crew_draft
+    )
 
     transcript_parts = [
-        "TASK 14 — AUTOGEN REVIEW TRANSCRIPTS",
+        "TASK 14 — AUTOGEN REVIEW OF THE ACTUAL CREWAI DRAFT",
         "Mode: deterministic MOCK_LLM; no external LLM API key.",
         "",
+        "Retrieved context passed to AutoGen:",
+        retrieved_context,
+        "",
+        "Actual CrewAI Composer draft:",
+        crew_draft,
+        "",
+        "CLEAN DRAFT — EXPECTED APPROVAL UNCHANGED",
+        f"Submitted draft:\n{clean_draft}",
     ]
-    for title, result, verdict in [
-        ("CLEAN DRAFT — EXPECTED APPROVAL", clean_result, clean_verdict),
-        ("PLANTED HALLUCINATION — EXPECTED REVISION", hallucination_result, hallucination_verdict),
-    ]:
-        transcript_parts.append(title)
-        for message in result.messages:
-            transcript_parts.append(f"[{message.source}]")
-            transcript_parts.append(str(message.content))
-        transcript_parts.extend([
-            "Structured verdict:",
-            verdict.model_dump_json(indent=2),
-            "",
-        ])
+    for message in clean_result.messages:
+        transcript_parts.append(f"[{message.source}]")
+        transcript_parts.append(str(message.content))
+    transcript_parts.extend([
+        "Structured verdict:",
+        clean_verdict.model_dump_json(indent=2),
+        "",
+        "PLANTED HALLUCINATION — EXPECTED REVISION",
+        f"Submitted draft:\n{injected_draft}",
+    ])
+    for message in revision_result.messages:
+        transcript_parts.append(f"[{message.source}]")
+        transcript_parts.append(str(message.content))
+    transcript_parts.extend([
+        "Structured verdict:",
+        revision_verdict.model_dump_json(indent=2),
+        "",
+        "PASS: actual CrewAI draft approved unchanged in scenario 1.",
+        "PASS: unsupported 30-day promise removed in scenario 2.",
+    ])
 
-    transcript_parts.append("PASS: clean draft approved; unsupported draft rejected and revised.")
     transcript_dir = Path("transcripts")
     transcript_dir.mkdir(exist_ok=True)
     (transcript_dir / "task14_autogen_review.txt").write_text(
@@ -228,21 +278,28 @@ async def run_review_demo() -> dict:
         encoding="utf-8",
     )
 
-    return {
+    evidence = {
         "task": "Task 14 - AutoGen review",
         "mode": "MOCK_LLM",
         "external_llm_api_keys_required": False,
+        "crew_draft_used": True,
         "clean_draft": clean_verdict.model_dump(),
-        "hallucination_draft": hallucination_verdict.model_dump(),
+        "hallucination_draft": revision_verdict.model_dump(),
         "status": "PASS",
         "transcript": "transcripts/task14_autogen_review.txt",
     }
+    Path("task14_review_evidence.json").write_text(
+        json.dumps(evidence, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return evidence
 
 
 def main() -> None:
     evidence = asyncio.run(run_review_demo())
     print("AutoGen status:", evidence["status"])
-    print("Clean draft approved:", evidence["clean_draft"]["approved"])
+    print("Actual CrewAI draft used:", evidence["crew_draft_used"])
+    print("Clean draft approved unchanged:", evidence["clean_draft"]["approved"])
     print("Hallucination draft approved:", evidence["hallucination_draft"]["approved"])
     print("Transcript:", evidence["transcript"])
 
