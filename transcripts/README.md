@@ -35,18 +35,18 @@ The runner records failures and exits non-zero if any step fails.
 | Area | Executable evidence |
 |---|---|
 | Dataset generation and validation | dataset.py |
-| Knowledge-base creation and RAG index | create_knowledge_base.py, vector_store.py |
+| Knowledge-base creation and RAG index | create_knowledge_base.py, vector_store.py, 13 committed policy files |
 | Retrieval and grounded-answer evaluation | evaluate_retrieval.py, evaluate_quality.py |
 | Order lookup | order_lookup.py, CrewAI tool transcript |
-| CrewAI orchestration | crew_agents.py, task7_crewai.txt |
+| CrewAI orchestration and least autonomy | crew_agents.py, test_least_autonomy.py, task7_crewai.txt |
 | Conversation memory | test_conversation_memory.py |
 | Structured response contract | test_response_schema.py |
 | PII masking and injection guardrails | test_guardrails.py |
 | FastAPI and WebSocket | test_api_contract.py, test_websocket.py, test_websocket_disconnect.py |
 | Structured logging | test_structured_logging.py |
-| Quality evaluation | evaluate_quality.py |
-| AutoGen review | review_stage.py, task14_autogen_review.txt |
-| Runtime limits and risk routing | test_governance.py |
+| Quality evaluation (15 queries, four scores each and four averages) | evaluate_quality.py, quality_evaluation_report.json |
+| AutoGen review of actual CrewAI draft | review_stage.py, task14_autogen_review.txt, task14_review_evidence.json |
+| Runtime token/cost limits and risk routing | test_governance.py |
 | Resilience and answer cache | test_resilience.py, test_cache.py |
 
 The repository README is the source of truth for task descriptions and known
