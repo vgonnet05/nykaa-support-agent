@@ -37,7 +37,7 @@ The runner records failures and exits non-zero if any step fails.
 | Area | Executable evidence |
 |---|---|
 | Dataset generation and validation | dataset.py |
-| Required knowledge-base topics and RAG index | create_knowledge_base.py, vector_store.py, 13 committed policy files |
+| Required knowledge-base topics and RAG index | create_knowledge_base.py, vector_store.py, 12 committed policy files |
 | Retrieval and grounded-answer evaluation | evaluate_retrieval.py, evaluate_quality.py |
 | Order lookup | order_lookup.py, CrewAI tool transcript |
 | CrewAI orchestration and least autonomy | crew_agents.py, test_least_autonomy.py, task7_crewai.txt |
