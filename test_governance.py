@@ -28,6 +28,14 @@ def test_runtime_limit_rejection_matches_api_contract():
     assert "reason" not in response
 
 
+def test_per_request_cost_budget_rejection():
+    # 4,000 characters estimate to 1,000 input tokens. With the configured
+    # 500-token output budget, the illustrative cost exceeds the 0.20 cap.
+    response = handle_support_request("x" * 4000)
+    assert response["type"] == "rejected"
+    assert "cost limit exceeded" in response["result"].lower()
+
+
 if __name__ == "__main__":
     test_high_risk_escalation()
     print("PASS: High-risk escalation")
@@ -37,4 +45,6 @@ if __name__ == "__main__":
     print("PASS: Low-risk processing")
     test_runtime_limit_rejection_matches_api_contract()
     print("PASS: Runtime-limit rejection response contract")
+    test_per_request_cost_budget_rejection()
+    print("PASS: Per-request cost-budget rejection")
     print("\nAll governance tests passed.")
