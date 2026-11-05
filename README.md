@@ -264,9 +264,10 @@ Run from the project root:
 
 ```bash
 python create_knowledge_base.py
+python vector_store.py
 ```
 
-This creates the local ChromaDB collections in `chroma_db/`.
+The first command creates the policy text files. The second command builds both local ChromaDB collections and generates their embeddings in `chroma_db/`.
 
 ## Run the API
 
