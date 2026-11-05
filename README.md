@@ -201,7 +201,7 @@ The CrewAI Composer task declares this model through output_pydantic=SupportResp
 | `POST /add-document` | Add a `.txt` policy document |
 | `WS /ws/chat` | Exchange support messages over WebSocket |
 
-The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections. test_api_contract.py exercises successful document addition and invalid extension, path traversal, empty-content, and duplicate-file responses.
+The document endpoint validates filenames and content, rejects duplicate filenames, and indexes accepted documents in both vector collections. test_api_contract.py exercises successful document addition and invalid extension, path traversal, empty-content, and duplicate-file responses. test_api_contract.py exercises successful document addition and invalid extension, path traversal, empty-content, and duplicate-file responses.
 
 ## Task 12: Structured Logging
 
