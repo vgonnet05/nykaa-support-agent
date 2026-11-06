@@ -1,0 +1,4 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_response_schema.py
+exit_code=0
+
+PASS: Structured SupportResponse schema

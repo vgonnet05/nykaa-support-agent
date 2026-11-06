@@ -1,0 +1,56 @@
+TASK 7 — CREWAI EXECUTION TRANSCRIPT
+Mode: deterministic MOCK_LLM; no external LLM API key.
+Agents: Retrieval Agent, Lookup Agent, Response Composer
+
+Actual tool permissions:
+{
+  "Retrieval Agent": [
+    "rag_policy_search"
+  ],
+  "Lookup Agent": [
+    "check_order_status"
+  ],
+  "Response Composer": []
+}
+
+Least-autonomy assertions: PASS
+Only Lookup Agent has check_order_status; Retrieval and Composer do not.
+
+Actual tool invocations:
+[
+  {
+    "tool": "rag_policy_search",
+    "input": "What is the cancellation policy?"
+  },
+  {
+    "tool": "check_order_status",
+    "input": "ORD1002"
+  }
+]
+
+Tool results:
+{
+  "rag_policy_search": "Based on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n",
+  "rag_sources": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "check_order_status": {
+    "record_id": "ORD1002",
+    "status": "Shipped",
+    "order_value_inr": 538,
+    "escalation_score": 0.21
+  }
+}
+
+Validated Pydantic SupportResponse:
+{
+  "answer": "Policy evidence:\nBased on the available policy information:\nNykaa Cancellation Policy — Project Assumptions\n\nCustomers may request cancellation before an order is dispatched, subject to the current order status. Once an order has shipped, the customer may need\norder has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti\ned and must not promise an unconfirmed outcome. This escalation matrix is a project assumption, not a verified official Nykaa policy.\n\n\nOrder lookup:\n{\"record_id\": \"ORD1002\", \"status\": \"Shipped\", \"order_value_inr\": 538, \"escalation_score\": 0.21}",
+  "source_documents": [
+    "cancellation_policy.txt",
+    "escalation_policy.txt"
+  ],
+  "requires_escalation": false
+}
+
+PASS: both tools ran and the final response passed Pydantic validation.

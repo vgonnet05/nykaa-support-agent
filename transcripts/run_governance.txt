@@ -1,0 +1,66 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_governance.py
+exit_code=0
+
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Total orders generated: 50
+First order: {'record_id': 'ORD1001', 'category': 'Home', 'status': 'Shipped', 'order_value_inr': 3763, 'days_since_created': 27, 'delayed_shipment': False}
+Category distribution: Counter({'Home': 10, 'Electronics': 10, 'Footwear': 10, 'Apparel': 10, 'Beauty': 10})
+Status distribution: Counter({'Delivered': 20, 'Shipped': 10, 'Refunded': 8, 'Returned': 7, 'Placed': 5})
+Delayed shipments: 10
+Delayed shipment percentage: 20.0 %
+Validation passed: All order IDs are unique.
+Validation passed: Minimum order count satisfied.
+Validation passed: All order values are within range.
+Validation passed: All order ages are within range.
+Validation passed: All required categories and statuses are present.
+Validation passed: Delayed shipment percentage is within range.
+Validation passed: Every category has at least 3 orders.
+PASS: High-risk escalation
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 103/103 [00:00<00:00, 3660.39it/s]
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/vector_store.py:35: FutureWarning: The `get_sentence_embedding_dimension` method has been renamed to `get_embedding_dimension`.
+  model.get_sentence_embedding_dimension()
+Embedding dimension: 384
+
+Result 1:
+Policy:  the payment provider and method. For cash-on-delivery (COD) orders, valid refund-account details must be provided before processing can proceed. Refund eligibility depends on order status and the app
+Source: refund_policy.txt
+Distance: 0.5443
+
+Result 2:
+Policy: Nykaa Refund Policy — Project Assumptions
+
+For this project, approved refunds are assumed to reach the customer's account within 5–7 business days, depending on the payment provider and method. For ca
+Source: refund_policy.txt
+Distance: 0.6075
+
+Result 3:
+Policy: order has shipped, the customer may need to request a return instead. Cancellation availability must be checked against the order record before a promise is made. These conditions are project assumpti
+Source: cancellation_policy.txt
+Distance: 0.6149
+PASS: Medium-risk processing
+
+Result 1:
+Policy: Nykaa Return Policy — Project Assumptions
+
+For this project, eligible Apparel, Footwear, and Home products may be returned within 7 days of delivery, while eligible Electronics products may be returne
+Source: return_policy.txt
+Distance: 0.7823
+
+Result 2:
+Policy: order information. Level 2 handles unresolved delivery delays, return or refund disputes, and exchange-eligibility questions. Level 3 handles suspected payment discrepancies, possible duplicate charge
+Source: escalation_policy.txt
+Distance: 0.7826
+
+Result 3:
+Policy: Nykaa Exchange Policy — Project Assumptions
+
+For this project, size exchanges may be requested for eligible Apparel and Footwear products within 7 days of delivery, subject to replacement-size availab
+Source: exchange_policy.txt
+Distance: 0.7942
+PASS: Low-risk processing
+PASS: Runtime-limit rejection response contract
+PASS: Per-request cost-budget rejection
+
+All governance tests passed.

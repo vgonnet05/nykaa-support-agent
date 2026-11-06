@@ -1,0 +1,6 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python create_knowledge_base.py
+exit_code=0
+
+Created/updated 10 knowledge-base documents.
+Manual documents left untouched: return_policy.txt, reverse_pickup_policy.txt
+Reminder: numerical policy values are fictional project assumptions.

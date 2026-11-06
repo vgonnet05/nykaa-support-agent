@@ -1,0 +1,27 @@
+$ /opt/hostedtoolcache/Python/3.11.18/x64/bin/python test_conversation_memory.py
+exit_code=0
+
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/test_conversation_memory.py:2: LangChainDeprecationWarning: RunnableWithMessageHistory is deprecated. Use LangGraph's built-in persistence instead.
+  from conversation_memory import conversation_chain, store
+/home/runner/work/nykaa-support-agent/nykaa-support-agent/conversation_memory.py:35: LangChainDeprecationWarning: The class `InMemoryChatMessageHistory` was deprecated in LangChain 1.6.4 and will be removed in 2.0.0 See the short-term memory documentation for recommended alternatives: https://docs.langchain.com/oss/python/langchain/short-term-memory
+  store[session_id] = InMemoryChatMessageHistory()
+=== TRANSCRIPT 1: Existing conversation ===
+human: My order number is ORD1001
+ai: Previous conversation:
+
+Current question: My order number is ORD1001
+human: What was my order number?
+ai: Previous conversation:
+human: My order number is ORD1001
+ai: Previous conversation:
+
+Current question: My order number is ORD1001
+Current question: What was my order number?
+
+=== TRANSCRIPT 2: Fresh conversation ===
+human: Hello, this is a new conversation.
+ai: Previous conversation:
+
+Current question: Hello, this is a new conversation.
+
+PASS: Both transcripts and session isolation verified.
